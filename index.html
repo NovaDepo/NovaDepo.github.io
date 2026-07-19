@@ -6,58 +6,36 @@
 <title>NovaDepo • Güvenli Giriş & Kayıt</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --primary: #8b5cf6;
-    --primary-dark: #6d28d9;
-    --accent: #06b6d4;
-    --success: #10b981;
-    --danger: #ef4444;
-    --text: #1f2937;
-    --muted: #9ca3af;
-    --glass: rgba(255, 255, 255, 0.08);
+    --primary: #8b5cf6; --primary-dark: #6d28d9; --accent: #06b6d4;
+    --success: #10b981; --danger: #ef4444; --text: #1f2937;
+    --muted: #9ca3af; --glass: rgba(255, 255, 255, 0.08);
     --glass-border: rgba(255, 255, 255, 0.15);
   }
-
   html, body { height: 100%; }
-
   body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    min-height: 100vh; display: flex; flex-direction: column;
     background: radial-gradient(ellipse at 50% 0%, #1e1b4b 0%, #0f0c29 40%, #020014 100%);
-    color: white;
-    overflow-x: hidden;
-    position: relative;
+    color: white; overflow-x: hidden; position: relative;
   }
-
-  /* ===== ÜST MENÜ ===== */
   .navbar {
-    position: relative; z-index: 10;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 40px;
-    border-bottom: 1px solid var(--glass-border);
-    background: rgba(15, 12, 41, 0.6);
-    backdrop-filter: blur(12px);
+    position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 40px; border-bottom: 1px solid var(--glass-border);
+    background: rgba(15, 12, 41, 0.6); backdrop-filter: blur(12px);
   }
   .nav-brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 800; letter-spacing: 1px; }
   .nav-brand span { color: var(--accent); }
   .nav-links { display: flex; gap: 24px; }
   .nav-links a { color: #d1d5db; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
   .nav-links a:hover { color: white; }
-
-  /* ===== ANA İÇERİK ===== */
   .main-content {
     flex: 1; display: flex; align-items: center; justify-content: center;
     position: relative; z-index: 5; padding: 20px; width: 100%;
   }
-
-  /* ===== ARKA PLAN EFEKTLERİ ===== */
   .stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
   .star { position: absolute; background: white; border-radius: 50%; animation: twinkle 3s ease-in-out infinite; }
   @keyframes twinkle { 0%,100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.3); } }
-
   .galaxy-wrapper {
     position: fixed; top: 50%; left: 50%; width: 900px; height: 900px;
     transform: translate(-50%, -50%); perspective: 1200px; z-index: 1; pointer-events: none; opacity: 0.7;
@@ -79,8 +57,6 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
   @keyframes corePulse { 0%,100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.15); } }
-
-  /* ===== AUTH KARTI (SEKMELİ YAPI) ===== */
   .auth-container {
     position: relative; z-index: 10; width: 100%; max-width: 480px;
     background: rgba(255, 255, 255, 0.97); color: var(--text);
@@ -88,17 +64,13 @@
     box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(139, 92, 246, 0.25);
     overflow: hidden;
   }
-
-  .auth-tabs {
-    display: flex; border-bottom: 2px solid #e5e7eb; background: #f9fafb;
-  }
+  .auth-tabs { display: flex; border-bottom: 2px solid #e5e7eb; background: #f9fafb; }
   .auth-tab {
     flex: 1; padding: 18px; text-align: center; font-size: 15px; font-weight: 700;
     color: var(--muted); cursor: pointer; transition: all 0.3s; border-bottom: 3px solid transparent; margin-bottom: -2px;
   }
   .auth-tab:hover { color: var(--primary); background: rgba(139, 92, 246, 0.05); }
   .auth-tab.active { color: var(--primary); border-bottom-color: var(--primary); background: white; }
-
   .auth-forms { position: relative; min-height: 520px; }
   .auth-form {
     position: absolute; inset: 0; padding: 32px;
@@ -109,11 +81,9 @@
   .auth-form.active {
     opacity: 1; visibility: visible; transform: translateX(0); position: relative;
   }
-
   .form-header { text-align: center; margin-bottom: 24px; }
   .form-header h2 { font-size: 24px; margin-bottom: 6px; color: var(--text); }
   .form-header p { font-size: 13.5px; color: var(--muted); }
-
   .form-group { margin-bottom: 14px; position: relative; }
   .form-group label { display: block; font-size: 12.5px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
   .input-wrapper { position: relative; }
@@ -125,13 +95,11 @@
   .input-wrapper .icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 15px; pointer-events: none; }
   .toggle-password { position: absolute; right: 11px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--muted); font-size: 14px; padding: 4px; }
   .toggle-password:hover { color: var(--primary); }
-
   .form-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-size: 12.5px; }
   .checkbox-wrapper { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--text); line-height: 1.4; }
   .checkbox-wrapper input { accent-color: var(--primary); cursor: pointer; margin-top: 2px; }
   .forgot-link { color: var(--primary); text-decoration: none; font-weight: 500; white-space: nowrap; }
   .forgot-link:hover { text-decoration: underline; }
-
   .btn-primary {
     width: 100%; padding: 12px; background: linear-gradient(135deg, var(--primary), var(--accent));
     color: white; border: none; border-radius: 10px; font-size: 14.5px; font-weight: 600; cursor: pointer;
@@ -140,10 +108,8 @@
   .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(139, 92, 246, 0.55); }
   .btn-primary:active { transform: translateY(0); }
   .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
   .divider { display: flex; align-items: center; gap: 10px; margin: 20px 0; color: var(--muted); font-size: 12px; }
   .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #e5e7eb; }
-
   .social-buttons { display: flex; gap: 10px; }
   .btn-social {
     flex: 1; padding: 10px 6px; border: 2px solid #e5e7eb; background: white; border-radius: 10px; cursor: pointer;
@@ -151,13 +117,10 @@
     gap: 6px; transition: all 0.2s;
   }
   .btn-social:hover { border-color: var(--primary); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-
   .trust-badges {
     display: flex; justify-content: center; gap: 16px; margin-top: 20px; padding-top: 16px; border-top: 1px solid #e5e7eb;
   }
   .trust-badges span { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
-
-  /* ===== MODAL ===== */
   .modal-overlay {
     position: fixed; inset: 0; z-index: 200; display: none;
     align-items: center; justify-content: center; padding: 20px;
@@ -185,8 +148,6 @@
   }
   .modal-box input[type="text"]:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(139,92,246,0.12); }
   .modal-terms { text-align: left; margin: 16px 0; font-size: 12px; color: var(--text); }
-
-  /* ===== FOOTER ===== */
   .footer {
     position: relative; z-index: 10; text-align: center; padding: 20px;
     border-top: 1px solid var(--glass-border); background: rgba(15, 12, 41, 0.6);
@@ -194,14 +155,12 @@
   }
   .footer a { color: #d1d5db; text-decoration: none; margin: 0 8px; }
   .footer a:hover { color: white; text-decoration: underline; }
-
   @media (max-width: 520px) {
     .auth-container { max-width: 100%; border-radius: 16px; }
     .auth-form { padding: 24px 20px; }
     .navbar { padding: 14px 20px; }
     .nav-links { display: none; }
   }
-
   .toast {
     position: fixed; top: 20px; right: 20px; padding: 14px 20px; background: white; color: var(--text);
     border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); font-size: 14px; font-weight: 600;
@@ -243,7 +202,6 @@
           <h2>Tekrar Hoş Geldin</h2>
           <p>Hesabına güvenli bir şekilde eriş</p>
         </div>
-
         <div class="form-group">
           <label for="loginEmail">E-posta Adresi</label>
           <div class="input-wrapper">
@@ -251,7 +209,6 @@
             <input type="email" id="loginEmail" placeholder="ornek@novadepo.com" required />
           </div>
         </div>
-
         <div class="form-group">
           <label for="loginPassword">Şifre</label>
           <div class="input-wrapper">
@@ -260,21 +217,16 @@
             <button type="button" class="toggle-password" data-target="loginPassword">👁️</button>
           </div>
         </div>
-
         <div class="form-options">
           <label class="checkbox-wrapper"><input type="checkbox" id="rememberMe" /> Beni hatırla</label>
-          <a href="#" class="forgot-link">Şifremi unuttum</a>
+          <a href="#" class="forgot-link" id="forgotPasswordLink">Şifremi unuttum</a>
         </div>
-
         <button type="submit" class="btn-primary" id="loginBtn">Giriş Yap</button>
-
         <div class="divider">veya şununla devam et</div>
-
         <div class="social-buttons">
           <button type="button" class="btn-social" data-provider="google">🔵 Google</button>
           <button type="button" class="btn-social" data-provider="github">⚫ GitHub</button>
         </div>
-
         <div class="trust-badges">
           <span>🔒 SSL</span>
           <span>🛡️ KVKK</span>
@@ -288,7 +240,6 @@
           <h2>Hesap Oluştur</h2>
           <p>10 GB ücretsiz alan ile evrene katıl</p>
         </div>
-
         <div class="form-group">
           <label for="regName">Ad Soyad</label>
           <div class="input-wrapper">
@@ -296,7 +247,6 @@
             <input type="text" id="regName" placeholder="Adınız Soyadınız" required />
           </div>
         </div>
-
         <div class="form-group">
           <label for="regEmail">E-posta Adresi</label>
           <div class="input-wrapper">
@@ -304,7 +254,6 @@
             <input type="email" id="regEmail" placeholder="ornek@novadepo.com" required />
           </div>
         </div>
-
         <div class="form-group">
           <label for="regPassword">Şifre</label>
           <div class="input-wrapper">
@@ -313,18 +262,14 @@
             <button type="button" class="toggle-password" data-target="regPassword">👁️</button>
           </div>
         </div>
-
         <div class="form-group">
           <label class="checkbox-wrapper">
             <input type="checkbox" id="termsRegister" required />
             <span><a href="#" style="color:var(--primary); text-decoration:underline;">Kullanım Şartları</a> ve <a href="#" style="color:var(--primary); text-decoration:underline;">Gizlilik Politikası</a>'nı okudum, kabul ediyorum.</span>
           </label>
         </div>
-
         <button type="submit" class="btn-primary" id="registerBtn">Kayıt Ol</button>
-
         <div class="divider">veya şununla kayıt ol</div>
-
         <div class="social-buttons">
           <button type="button" class="btn-social" data-provider="google">🔵 Google</button>
           <button type="button" class="btn-social" data-provider="github">⚫ GitHub</button>
@@ -345,16 +290,13 @@
     <div class="modal-icon" id="modalIcon">🔵</div>
     <h3 id="modalTitle">Google ile Devam Et</h3>
     <p class="modal-sub">Hesabını bağlamak için bilgilerini onayla</p>
-
     <input type="text" id="socialName" placeholder="Görünen Adın" />
-
     <div class="modal-terms">
       <label class="checkbox-wrapper">
         <input type="checkbox" id="termsSocial" required />
         <span><a href="#" style="color:var(--primary); text-decoration:underline;">Kullanım Şartları</a> ve <a href="#" style="color:var(--primary); text-decoration:underline;">Gizlilik Politikası</a>'nı kabul ediyorum.</span>
       </label>
     </div>
-
     <button class="btn-primary" id="socialContinue" type="button">Bağlan ve Devam Et 🚀</button>
   </div>
 </div>
@@ -372,11 +314,13 @@
     GithubAuthProvider, 
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword,
-    onAuthStateChanged
+    onAuthStateChanged,
+    updateProfile,
+    sendPasswordResetEmail
   } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
   // 2. FIREBASE AYARLARI (Kendi projenizden aldığınız bilgilerle değiştirin)
-  // NOT: Burayı doldurmazsanız sistem "Demo Modu"nda çalışır (localStorage simülasyonu).
+  // ⚠️ ÖNEMLİ: Burayı Firebase Konsolu > Project Settings > General > Your apps kısmından alın.
   const firebaseConfig = {
     apiKey: "SENIN_API_KEY_BURAYA",
     authDomain: "SENIN_PROJE.firebaseapp.com",
@@ -390,15 +334,14 @@
   let isDemoMode = false;
 
   try {
-    // Config gerçekçi değilse (placeholder ise) hata vermesin, demo moda düşsün
-    if (firebaseConfig.apiKey === "SENIN_API_KEY_BURAYA") {
+    if (firebaseConfig.apiKey === "SENIN_API_KEY_BURAYA" || !firebaseConfig.apiKey) {
       throw new Error("Firebase config ayarlanmamış");
     }
     const app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     console.log("✅ Firebase başarıyla başlatıldı.");
   } catch (error) {
-    console.warn("⚠️ Firebase yapılandırması bulunamadı. 'Demo Modu' etkinleştiriliyor.");
+    console.warn("⚠️ Firebase yapılandırması bulunamadı veya hatalı. 'Demo Modu' etkinleştiriliyor.");
     isDemoMode = true;
   }
 
@@ -419,13 +362,20 @@
   function saveSession(user) {
     try {
       localStorage.setItem('novaUser', JSON.stringify({
-        name: user.displayName || user.email.split('@')[0],
+        uid: user.uid,
+        name: user.displayName || user.email?.split('@')[0] || 'Kullanıcı',
         email: user.email,
         avatar: user.photoURL || null,
         provider: user.providerData[0]?.providerId || 'email',
         loginTime: Date.now()
       }));
-    } catch (e) {}
+    } catch (e) {
+      console.error("Oturum kaydedilemedi:", e);
+    }
+  }
+
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
   // 4. SEKME (TAB) GEÇİŞLERİ
@@ -433,7 +383,6 @@
     tab.addEventListener('click', () => {
       document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-      
       tab.classList.add('active');
       const target = tab.dataset.tab;
       document.querySelector(`.auth-form[data-form="${target}"]`).classList.add('active');
@@ -457,18 +406,17 @@
     const btn = document.getElementById('loginBtn');
 
     if (!email || !pass) { showToast('⚠️ E-posta ve şifre gerekli', true); return; }
+    if (!isValidEmail(email)) { showToast('⚠️ Geçersiz e-posta formatı', true); return; }
 
     btn.disabled = true; btn.textContent = '⏳ Giriş yapılıyor...';
 
     try {
       if (isDemoMode) {
-        // Demo Modu Simülasyonu
         await new Promise(r => setTimeout(r, 1000));
-        saveSession({ email: email, displayName: email.split('@')[0], providerData: [{ providerId: 'password' }] });
+        saveSession({ uid: 'demo-123', email: email, displayName: email.split('@')[0], providerData: [{ providerId: 'password' }] });
         showToast('✅ Demo modunda giriş başarılı!');
         goToMenu();
       } else {
-        // GERÇEK FIREBASE GİRİŞİ
         const userCredential = await signInWithEmailAndPassword(auth, email, pass);
         saveSession(userCredential.user);
         showToast('✅ Giriş başarılı!');
@@ -477,8 +425,13 @@
     } catch (error) {
       console.error(error);
       let msg = "Giriş yapılamadı.";
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') msg = "Hatalı e-posta veya şifre.";
-      else if (error.code === 'auth/invalid-email') msg = "Geçersiz e-posta formatı.";
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+        msg = "Hatalı e-posta veya şifre.";
+      } else if (error.code === 'auth/invalid-email') {
+        msg = "Geçersiz e-posta formatı.";
+      } else if (error.code === 'auth/too-many-requests') {
+        msg = "Çok fazla hatalı deneme. Lütfen daha sonra tekrar deneyin.";
+      }
       showToast('⚠️ ' + msg, true);
     } finally {
       btn.disabled = false; btn.textContent = 'Giriş Yap';
@@ -495,6 +448,7 @@
     const btn = document.getElementById('registerBtn');
 
     if (!name || !email || !pass) { showToast('⚠️ Tüm alanları doldurun', true); return; }
+    if (!isValidEmail(email)) { showToast('⚠️ Geçersiz e-posta formatı', true); return; }
     if (pass.length < 8) { showToast('⚠️ Şifre en az 8 karakter olmalı', true); return; }
     if (!terms) { showToast('⚠️ Kullanım şartlarını kabul etmelisiniz', true); return; }
 
@@ -503,14 +457,14 @@
     try {
       if (isDemoMode) {
         await new Promise(r => setTimeout(r, 1200));
-        saveSession({ email: email, displayName: name, providerData: [{ providerId: 'password' }] });
+        saveSession({ uid: 'demo-124', email: email, displayName: name, providerData: [{ providerId: 'password' }] });
         showToast('✅ Demo modunda kayıt başarılı!');
         goToMenu();
       } else {
         // GERÇEK FIREBASE KAYDI
         const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-        // İsteğe bağlı: Kullanıcı adını Firebase profilinde güncelle
-        // await updateProfile(userCredential.user, { displayName: name });
+        // Kullanıcı adını Firebase profilinde güncelle
+        await updateProfile(userCredential.user, { displayName: name });
         saveSession(userCredential.user);
         showToast('✅ Hesap başarıyla oluşturuldu!');
         goToMenu();
@@ -519,7 +473,8 @@
       console.error(error);
       let msg = "Kayıt başarısız.";
       if (error.code === 'auth/email-already-in-use') msg = "Bu e-posta adresi zaten kullanımda.";
-      else if (error.code === 'auth/weak-password') msg = "Şifre çok zayıf.";
+      else if (error.code === 'auth/weak-password') msg = "Şifre çok zayıf. Daha güçlü bir şifre seçin.";
+      else if (error.code === 'auth/invalid-email') msg = "Geçersiz e-posta formatı.";
       showToast('⚠️ ' + msg, true);
     } finally {
       btn.disabled = false; btn.textContent = 'Kayıt Ol';
@@ -568,7 +523,7 @@
     try {
       if (isDemoMode) {
         await new Promise(r => setTimeout(r, 1000));
-        saveSession({ email: name+'@demo.com', displayName: name, photoURL: null, providerData: [{ providerId: currentProvider }] });
+        saveSession({ uid: 'demo-social', email: name+'@demo.com', displayName: name, photoURL: null, providerData: [{ providerId: currentProvider }] });
         showToast('✅ Demo modunda ' + providers[currentProvider].name + ' bağlantısı başarılı!');
         closeSocialModal();
         goToMenu();
@@ -577,7 +532,12 @@
         const providerInstance = providers[currentProvider].firebase;
         const result = await signInWithPopup(auth, providerInstance);
         
-        // Eğer kullanıcı adı Firebase'de boşsa (ilk kez), simüle edilmiş isimle güncelle (opsiyonel)
+        // Eğer Firebase'den gelen isim boşsa veya kullanıcı modalda farklı bir isim girdiyse güncelle
+        if (!result.user.displayName || result.user.displayName !== name) {
+          await updateProfile(result.user, { displayName: name });
+        }
+        
+        // Oturum verisini güncel haliyle kaydet
         saveSession(result.user);
         showToast('✅ ' + providers[currentProvider].name + ' ile giriş başarılı!');
         closeSocialModal();
@@ -588,29 +548,59 @@
       let msg = "Bağlantı başarısız.";
       if (error.code === 'auth/popup-closed-by-user') msg = "Giriş penceresi kapatıldı.";
       else if (error.code === 'auth/account-exists-with-different-credential') msg = "Bu e-posta başka bir yöntemle kayıtlı.";
+      else if (error.code === 'auth/popup-blocked') msg = "Tarayıcı açılır pencereyi engelledi. Lütfen izin verin.";
+      else if (error.code === 'auth/operation-not-allowed') msg = "Bu giriş yöntemi Firebase konsolunda etkinleştirilmemiş.";
       showToast('⚠️ ' + msg, true);
     } finally {
       btn.disabled = false; btn.textContent = 'Bağlan ve Devam Et 🚀';
     }
   });
 
-  // 9. SAYFA YÜKLENDİĞİNDE OTURUM KONTROLÜ
+  // 9. ŞİFREMİ UNUTTUM
+  document.getElementById('forgotPasswordLink').addEventListener('click', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    if (!email || !isValidEmail(email)) {
+      showToast('⚠️ Lütfen önce geçerli bir e-posta adresi girin', true);
+      document.getElementById('loginEmail').focus();
+      return;
+    }
+
+    if (isDemoMode) {
+      showToast('✅ Demo modu: Şifre sıfırlama e-postası gönderildi (simülasyon)');
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      showToast('✅ Şifre sıfırlama bağlantısı e-posta adresinize gönderildi!');
+    } catch (error) {
+      let msg = "Şifre sıfırlama başarısız.";
+      if (error.code === 'auth/user-not-found') msg = "Bu e-posta adresiyle kayıtlı kullanıcı bulunamadı.";
+      showToast('⚠️ ' + msg, true);
+    }
+  });
+
+  // 10. SAYFA YÜKLENDİĞİNDE OTURUM KONTROLÜ
   if (!isDemoMode && auth) {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        // Zaten giriş yapmışsa direkt ana menüye at
         saveSession(user);
-        window.location.replace('./anamenu/');
+        // Eğer zaten anamenüde değilsek yönlendir
+        if (!window.location.pathname.includes('anamenu')) {
+          window.location.replace('./anamenu/');
+        }
       }
     });
   } else {
-    // Demo modda localStorage kontrolü
     if (localStorage.getItem('novaUser')) {
-      window.location.replace('./anamenu/');
+      if (!window.location.pathname.includes('anamenu')) {
+        window.location.replace('./anamenu/');
+      }
     }
   }
 
-  // 10. YILDIZ EFEKTİ
+  // 11. YILDIZ EFEKTİ
   (function createStars() {
     const box = document.getElementById('stars');
     if (!box) return;
@@ -626,6 +616,5 @@
     }
   })();
 </script>
-
 </body>
 </html>
