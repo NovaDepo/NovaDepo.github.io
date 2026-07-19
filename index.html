@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>NovaDepo • Giriş & Kayıt</title>
+<title>NovaDepo • Güvenli Bulut Depolama</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -14,13 +14,10 @@
     --accent-2: #ec4899;
     --gold: #fbbf24;
     --success: #10b981;
-    --warning: #f59e0b;
-    --danger: #ef4444;
     --text: #1f2937;
-    --muted: #6b7280;
-    --space-1: #05030f;
-    --space-2: #1a1140;
-    --space-3: #0d0824;
+    --muted: #9ca3af;
+    --glass: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.15);
   }
 
   html, body { height: 100%; }
@@ -28,116 +25,137 @@
   body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     min-height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px;
-    background: radial-gradient(ellipse at center, var(--space-2) 0%, var(--space-1) 55%, var(--space-3) 100%);
+    display: flex;
+    flex-direction: column;
+    background: radial-gradient(ellipse at 50% 0%, #1e1b4b 0%, #0f0c29 40%, #020014 100%);
+    color: white;
     overflow-x: hidden;
     position: relative;
   }
 
-  /* ===== YILDIZLAR (JS ile) ===== */
-  .stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-  .star { position: absolute; background: white; border-radius: 50%; animation: twinkle 3s ease-in-out infinite; }
-  @keyframes twinkle {
-    0%, 100% { opacity: 0.15; transform: scale(0.7); }
-    50%      { opacity: 1;    transform: scale(1.3); }
+  /* ===== ÜST MENÜ ===== */
+  .navbar {
+    position: relative; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 40px;
+    border-bottom: 1px solid var(--glass-border);
+    background: rgba(15, 12, 41, 0.6);
+    backdrop-filter: blur(12px);
+  }
+  .nav-brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 800; letter-spacing: 1px; }
+  .nav-brand span { color: var(--accent); }
+  .nav-links { display: flex; gap: 24px; }
+  .nav-links a { color: #d1d5db; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+  .nav-links a:hover { color: white; }
+
+  /* ===== ANA İÇERİK ALANI ===== */
+  .main-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 5;
+    padding: 20px;
+    width: 100%;
   }
 
-  /* ===== ANİMASYONLU GALAKSİ ===== */
-  .galaxy-wrapper {
-    position: fixed;
-    top: 50%; left: 50%;
-    width: 950px; height: 950px;
-    transform: translate(-50%, -50%);
-    perspective: 1200px;
-    z-index: 0;
+  /* ===== YÜZEN CANLI KARTLAR (Sayfayı doldurur) ===== */
+  .float-card {
+    position: absolute;
+    background: var(--glass);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    animation: floatCard 6s ease-in-out infinite;
+    z-index: 4;
     pointer-events: none;
-    opacity: 0.9;
   }
-  .galaxy {
-    position: absolute; inset: 0;
-    transform: rotateX(58deg);
-    transform-style: preserve-3d;
+  .float-card .fc-icon { font-size: 20px; }
+  .fc-1 { top: 15%; left: 8%; animation-delay: 0s; }
+  .fc-2 { bottom: 20%; right: 8%; animation-delay: 2s; }
+  .fc-3 { top: 25%; right: 12%; animation-delay: 4s; }
+  .fc-4 { bottom: 15%; left: 12%; animation-delay: 1s; }
+
+  @keyframes floatCard {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
   }
-  .galaxy-arm {
-    position: absolute; border-radius: 50%;
-    filter: blur(5px);
+
+  /* ===== GALAKSİ ARKA PLAN ===== */
+  .galaxy-wrapper {
+    position: fixed; top: 50%; left: 50%;
+    width: 1000px; height: 1000px;
+    transform: translate(-50%, -50%);
+    perspective: 1200px; z-index: 1; pointer-events: none; opacity: 0.8;
   }
+  .galaxy { position: absolute; inset: 0; transform: rotateX(60deg); transform-style: preserve-3d; }
+  .galaxy-arm { position: absolute; border-radius: 50%; filter: blur(8px); }
   .arm-1 {
-    inset: 4%;
-    background: conic-gradient(from 0deg,
-      transparent 0deg, rgba(139,92,246,0.65) 22deg, rgba(139,92,246,0.08) 65deg, transparent 95deg,
-      transparent 180deg, rgba(6,182,212,0.55) 202deg, rgba(6,182,212,0.08) 245deg, transparent 275deg);
-    animation: spin 55s linear infinite;
+    inset: 5%;
+    background: conic-gradient(from 0deg, transparent 0deg, rgba(139,92,246,0.7) 22deg, rgba(139,92,246,0.1) 65deg, transparent 95deg, transparent 180deg, rgba(6,182,212,0.6) 202deg, rgba(6,182,212,0.1) 245deg, transparent 275deg);
+    animation: spin 60s linear infinite;
   }
   .arm-2 {
-    inset: 14%;
-    background: conic-gradient(from 90deg,
-      transparent 0deg, rgba(236,72,153,0.55) 28deg, rgba(236,72,153,0.06) 68deg, transparent 95deg,
-      transparent 180deg, rgba(251,191,36,0.45) 208deg, rgba(251,191,36,0.06) 248deg, transparent 275deg);
-    animation: spin 40s linear infinite reverse;
-  }
-  .arm-3 {
-    inset: 24%;
-    background: conic-gradient(from 200deg,
-      transparent 0deg, rgba(139,92,246,0.7) 25deg, rgba(139,92,246,0.08) 60deg, transparent 90deg,
-      transparent 180deg, rgba(6,182,212,0.6) 205deg, rgba(6,182,212,0.08) 245deg, transparent 275deg);
-    animation: spin 70s linear infinite;
-  }
-  .galaxy-glow {
-    position: absolute; inset: 28%;
-    background: radial-gradient(circle, rgba(251,191,36,0.45), rgba(139,92,246,0.25) 45%, transparent 70%);
-    border-radius: 50%; filter: blur(25px);
-    animation: glowPulse 6s ease-in-out infinite;
+    inset: 15%;
+    background: conic-gradient(from 90deg, transparent 0deg, rgba(236,72,153,0.6) 28deg, rgba(236,72,153,0.1) 68deg, transparent 95deg, transparent 180deg, rgba(251,191,36,0.5) 208deg, rgba(251,191,36,0.1) 248deg, transparent 275deg);
+    animation: spin 45s linear infinite reverse;
   }
   .galaxy-core {
-    position: absolute; top: 50%; left: 50%;
-    width: 90px; height: 90px;
+    position: absolute; top: 50%; left: 50%; width: 120px; height: 120px;
     transform: translate(-50%, -50%);
-    background: radial-gradient(circle, #fff 0%, #fef3c7 28%, rgba(251,191,36,0.75) 48%, transparent 74%);
+    background: radial-gradient(circle, #fff 0%, #fef3c7 28%, rgba(251,191,36,0.8) 48%, transparent 74%);
     border-radius: 50%;
-    box-shadow: 0 0 60px 22px rgba(251,191,36,0.5), 0 0 130px 50px rgba(139,92,246,0.35);
-    animation: corePulse 4s ease-in-out infinite;
+    box-shadow: 0 0 80px 30px rgba(251,191,36,0.6), 0 0 160px 60px rgba(139,92,246,0.4);
+    animation: corePulse 5s ease-in-out infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-  @keyframes corePulse {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.95; }
-    50%      { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
-  }
-  @keyframes glowPulse {
-    0%, 100% { opacity: 0.6; }
-    50%      { opacity: 1; }
-  }
+  @keyframes corePulse { 0%,100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.2); } }
 
-  /* ===== KART ===== */
-  .container { position: relative; z-index: 1; width: 100%; max-width: 940px; min-height: 680px; perspective: 1500px; }
-  .card { position: relative; width: 100%; height: 100%; transition: transform 0.9s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
+  .stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .star { position: absolute; background: white; border-radius: 50%; animation: twinkle 3s ease-in-out infinite; }
+  @keyframes twinkle { 0%,100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.3); } }
+
+  /* ===== FORM KARTI ===== */
+  .container {
+    position: relative; z-index: 10; width: 100%; max-width: 900px;
+    perspective: 1500px;
+  }
+  .card {
+    position: relative; width: 100%; min-height: 620px;
+    transition: transform 0.9s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d;
+  }
   .card.flipped { transform: rotateY(180deg); }
   .card-face {
     position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
-    background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.97); color: var(--text);
     border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 24px;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 50px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(139, 92, 246, 0.25);
     display: grid; grid-template-columns: 1fr 1.1fr; overflow: hidden;
   }
   .card-back { transform: rotateY(180deg); }
 
-  /* Sol panel */
   .brand-panel {
     background: linear-gradient(160deg, #1e1b4b 0%, var(--primary-dark) 55%, #0e7490 100%);
-    color: white; padding: 38px 30px; display: flex; flex-direction: column; justify-content: center;
+    color: white; padding: 36px 28px; display: flex; flex-direction: column; justify-content: center;
     position: relative; overflow: hidden;
   }
   .brand-panel::before {
     content: ''; position: absolute; top: -50%; right: -50%; width: 200%; height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 60%);
-    animation: rotateBg 25s linear infinite;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+    animation: rotateBg 30s linear infinite;
   }
   @keyframes rotateBg { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-  .brand-logo { font-size: 50px; margin-bottom: 12px; position: relative; z-index: 1; animation: floatLogo 6s ease-in-out infinite; }
-  @keyframes floatLogo { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-  .brand-name { font-size: 14px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 6px; position: relative; z-index: 1; }
+  .brand-logo { font-size: 48px; margin-bottom: 12px; position: relative; z-index: 1; }
+  .brand-name { font-size: 13px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 6px; position: relative; z-index: 1; }
   .brand-panel h1 { font-size: 26px; margin-bottom: 12px; position: relative; z-index: 1; line-height: 1.3; }
   .brand-panel p { font-size: 13.5px; line-height: 1.6; opacity: 0.9; position: relative; z-index: 1; }
   .brand-features { margin-top: 20px; list-style: none; position: relative; z-index: 1; }
@@ -147,27 +165,14 @@
     width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
     font-size: 11px; font-weight: bold; flex-shrink: 0;
   }
-  .brand-stats {
-    display: flex; gap: 10px; margin-top: 22px; position: relative; z-index: 1;
-  }
-  .brand-stats div {
-    flex: 1; text-align: center; padding: 10px 6px; border-radius: 12px;
-    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
-  }
-  .brand-stats strong { display: block; font-size: 17px; color: var(--gold); }
-  .brand-stats span { font-size: 10.5px; opacity: 0.85; }
 
-  /* Sağ panel (form) */
-  .form-panel { padding: 32px 32px; display: flex; flex-direction: column; justify-content: center; overflow-y: auto; }
+  .form-panel { padding: 32px 32px; display: flex; flex-direction: column; justify-content: center; }
   .form-panel h2 { color: var(--text); font-size: 24px; margin-bottom: 4px; }
   .form-panel .subtitle { color: var(--muted); font-size: 13.5px; margin-bottom: 18px; }
 
-  /* Avatar seçici */
-  .avatar-picker {
-    display: flex; align-items: center; gap: 12px; margin-bottom: 16px; cursor: pointer;
-  }
+  .avatar-picker { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; cursor: pointer; }
   .avatar-preview {
-    width: 58px; height: 58px; border-radius: 50%; flex-shrink: 0;
+    width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0;
     background: linear-gradient(135deg, #ede9fe, #cffafe);
     border: 2px dashed var(--primary);
     display: flex; align-items: center; justify-content: center;
@@ -224,18 +229,24 @@
   .switch-form button { background: none; border: none; color: var(--primary); font-weight: 600; cursor: pointer; font-size: 13px; }
   .switch-form button:hover { text-decoration: underline; }
 
-  /* ===== MODAL (Sosyal Giriş) ===== */
+  /* Güvenlik Rozetleri */
+  .trust-badges {
+    display: flex; justify-content: center; gap: 16px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #e5e7eb;
+  }
+  .trust-badges span { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+
+  /* ===== MODAL ===== */
   .modal-overlay {
     position: fixed; inset: 0; z-index: 200; display: none;
     align-items: center; justify-content: center; padding: 20px;
-    background: rgba(5, 3, 15, 0.75); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    background: rgba(5, 3, 15, 0.8); backdrop-filter: blur(8px);
   }
   .modal-overlay.active { display: flex; animation: fadeIn 0.25s ease; }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   .modal-box {
     background: white; border-radius: 20px; padding: 30px 28px; width: 100%; max-width: 380px;
     text-align: center; position: relative; box-shadow: 0 25px 60px rgba(0,0,0,0.5);
-    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: var(--text);
   }
   @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
   .modal-close {
@@ -244,212 +255,239 @@
   }
   .modal-close:hover { background: #e5e7eb; color: var(--text); }
   .modal-icon { font-size: 44px; margin-bottom: 8px; }
-  .modal-box h3 { color: var(--text); font-size: 20px; margin-bottom: 4px; }
+  .modal-box h3 { font-size: 20px; margin-bottom: 4px; }
   .modal-box .modal-sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
   .modal-avatar-picker { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 16px; cursor: pointer; }
   .modal-avatar-picker .avatar-preview { width: 72px; height: 72px; font-size: 30px; }
-  .modal-avatar-picker .avatar-hint { text-align: center; }
   .modal-box input[type="text"] {
     width: 100%; padding: 12px 14px; border: 2px solid #e5e7eb; border-radius: 10px;
     font-size: 14px; margin-bottom: 14px; transition: all 0.25s;
   }
   .modal-box input[type="text"]:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(139,92,246,0.12); }
 
-  @media (max-width: 760px) {
+  /* ===== FOOTER ===== */
+  .footer {
+    position: relative; z-index: 10;
+    text-align: center; padding: 20px;
+    border-top: 1px solid var(--glass-border);
+    background: rgba(15, 12, 41, 0.6);
+    backdrop-filter: blur(12px);
+    font-size: 12px; color: var(--muted);
+  }
+  .footer a { color: #d1d5db; text-decoration: none; margin: 0 8px; }
+  .footer a:hover { color: white; text-decoration: underline; }
+
+  @media (max-width: 800px) {
+    .float-card { display: none; } /* Mobilde yüzen kartları gizle, alan daralır */
     .card-face { grid-template-columns: 1fr; }
     .brand-panel { display: none; }
     .form-panel { padding: 26px 22px; }
     .container { min-height: auto; }
-    .galaxy-wrapper { width: 560px; height: 560px; }
-  }
-  @media (max-width: 480px) {
-    .galaxy-wrapper { width: 420px; height: 420px; }
-    .social-buttons { flex-direction: column; }
+    .navbar { padding: 14px 20px; }
+    .nav-links { display: none; }
   }
 
   .toast {
-    position: fixed; top: 20px; right: 20px; padding: 14px 20px; background: white; border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.35); font-size: 14px; z-index: 300; transform: translateX(120%);
-    transition: transform 0.3s; border-left: 4px solid var(--success); max-width: 320px;
+    position: fixed; top: 20px; right: 20px; padding: 14px 20px; background: white; color: var(--text);
+    border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); font-size: 14px; font-weight: 600;
+    z-index: 300; transform: translateX(120%); transition: transform 0.3s;
+    border-left: 4px solid var(--success); max-width: 340px;
   }
   .toast.show { transform: translateX(0); }
 </style>
 </head>
 <body>
 
-<!-- YILDIZLAR -->
-<div class="stars" id="stars"></div>
-
-<!-- ANİMASYONLU GALAKSİ -->
-<div class="galaxy-wrapper">
-  <div class="galaxy">
-    <div class="galaxy-arm arm-1"></div>
-    <div class="galaxy-arm arm-2"></div>
-    <div class="galaxy-arm arm-3"></div>
-    <div class="galaxy-glow"></div>
+<!-- ÜST MENÜ -->
+<nav class="navbar">
+  <div class="nav-brand">🪐 Nova<span>Depo</span></div>
+  <div class="nav-links">
+    <a href="#">Özellikler</a>
+    <a href="#">Fiyatlandırma</a>
+    <a href="#">Kurumsal</a>
+    <a href="#">Destek</a>
   </div>
-  <div class="galaxy-core"></div>
-</div>
+</nav>
 
-<div class="container">
-  <div class="card" id="card">
+<!-- YÜZEN CANLI KARTLAR (Sayfayı dolu gösterir) -->
+<div class="float-card fc-1"><span class="fc-icon">🔒</span> 256-bit Uçtan Uca Şifreleme</div>
+<div class="float-card fc-2"><span class="fc-icon">⚡</span> Işık Hızında Senkronizasyon</div>
+<div class="float-card fc-3"><span class="fc-icon">✅</span> Dosya başarıyla yüklendi</div>
+<div class="float-card fc-4"><span class="fc-icon">🌍</span> 150+ Ülkede Aktif</div>
 
-    <!-- ===== GİRİŞ ===== -->
-    <div class="card-face card-front">
-      <div class="brand-panel">
-        <div class="brand-logo">🪐</div>
-        <div class="brand-name">NovaDepo</div>
-        <h1>Galaksiye Tekrar Hoş Geldin!</h1>
-        <p>Dosyaların yıldızlar kadar güvende. Giriş yap ve evrenine kaldığın yerden devam et.</p>
-        <ul class="brand-features">
-          <li>Uçtan uca galaktik şifreleme</li>
-          <li>Sınırsız cihaz senkronizasyonu</li>
-          <li>Işık hızında yükleme</li>
-        </ul>
-        <div class="brand-stats">
-          <div><strong>10M+</strong><span>Kullanıcı</span></div>
-          <div><strong>99.9%</strong><span>Uptime</span></div>
-          <div><strong>150+</strong><span>Ülke</span></div>
+<!-- ANA İÇERİK -->
+<main class="main-content">
+  <div class="stars" id="stars"></div>
+  
+  <div class="galaxy-wrapper">
+    <div class="galaxy">
+      <div class="galaxy-arm arm-1"></div>
+      <div class="galaxy-arm arm-2"></div>
+    </div>
+    <div class="galaxy-core"></div>
+  </div>
+
+  <div class="container">
+    <div class="card" id="card">
+
+      <!-- GİRİŞ -->
+      <div class="card-face card-front">
+        <div class="brand-panel">
+          <div class="brand-logo">🚀</div>
+          <div class="brand-name">NovaDepo</div>
+          <h1>Galaksiye Tekrar Hoş Geldin!</h1>
+          <p>Dosyaların yıldızlar kadar güvende. Giriş yap ve evrenine kaldığın yerden devam et.</p>
+          <ul class="brand-features">
+            <li>Uçtan uca galaktik şifreleme</li>
+            <li>Sınırsız cihaz senkronizasyonu</li>
+            <li>Işık hızında dosya yükleme</li>
+          </ul>
+        </div>
+
+        <div class="form-panel">
+          <h2>Giriş Yap</h2>
+          <p class="subtitle">NovaDepo hesabına güvenli erişim sağla</p>
+
+          <form id="loginForm" novalidate>
+            <div class="avatar-picker" id="loginAvatarPicker">
+              <div class="avatar-preview" id="loginAvatarPreview">👤</div>
+              <input type="file" id="loginAvatarInput" accept="image/*" hidden />
+              <div class="avatar-hint"><strong>Profil fotoğrafı</strong>PNG/JPG, max 2 MB (opsiyonel)</div>
+            </div>
+
+            <div class="form-group">
+              <label for="loginUsername">Kullanıcı Adı</label>
+              <div class="input-wrapper">
+                <span class="icon">👤</span>
+                <input type="text" id="loginUsername" placeholder="kullanici_adin" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="loginPassword">Şifre</label>
+              <div class="input-wrapper">
+                <span class="icon">🔒</span>
+                <input type="password" id="loginPassword" placeholder="••••••••" required />
+                <button type="button" class="toggle-password" data-target="loginPassword">👁️</button>
+              </div>
+            </div>
+
+            <div class="form-options">
+              <label class="checkbox-wrapper"><input type="checkbox" id="rememberMe" /> Beni hatırla</label>
+              <a href="#" class="forgot-link">Şifremi unuttum</a>
+            </div>
+
+            <button type="submit" class="btn-primary" id="loginBtn">🚀 Giriş Yap</button>
+
+            <div class="divider">veya şununla devam et</div>
+
+            <div class="social-buttons">
+              <button type="button" class="btn-social" data-provider="google" data-icon="🔵">Google</button>
+              <button type="button" class="btn-social" data-provider="github" data-icon="⚫">GitHub</button>
+              <button type="button" class="btn-social" data-provider="apple" data-icon="🍎">Apple</button>
+            </div>
+
+            <div class="trust-badges">
+              <span>🔒 SSL Güvenli</span>
+              <span>🛡️ KVKK Uyumlu</span>
+              <span>🎧 7/24 Destek</span>
+            </div>
+
+            <p class="switch-form">Hesabın yok mu? <button type="button" onclick="flipCard()">Kayıt Ol</button></p>
+          </form>
         </div>
       </div>
 
-      <div class="form-panel">
-        <h2>Giriş Yap</h2>
-        <p class="subtitle">NovaDepo hesabına eriş</p>
+      <!-- KAYIT -->
+      <div class="card-face card-back">
+        <div class="brand-panel">
+          <div class="brand-logo">✨</div>
+          <div class="brand-name">NovaDepo</div>
+          <h1>Evrene Katıl!</h1>
+          <p>Ücretsiz 10 GB bulut depolama ile başla. Kayıt sadece 30 saniye sürer.</p>
+          <ul class="brand-features">
+            <li>Ücretsiz 10 GB başlangıç alanı</li>
+            <li>7/24 galaktik teknik destek</li>
+            <li>İstediğin zaman iptal et</li>
+          </ul>
+        </div>
 
-        <form id="loginForm" novalidate>
-          <div class="avatar-picker" id="loginAvatarPicker">
-            <div class="avatar-preview" id="loginAvatarPreview">👤</div>
-            <input type="file" id="loginAvatarInput" accept="image/*" hidden />
-            <div class="avatar-hint"><strong>Profil fotoğrafı seç</strong>PNG/JPG, en fazla 2 MB (opsiyonel)</div>
-          </div>
+        <div class="form-panel">
+          <h2>Hesap Oluştur</h2>
+          <p class="subtitle">NovaDepo evrenine adım at</p>
 
-          <div class="form-group">
-            <label for="loginUsername">Kullanıcı Adı</label>
-            <div class="input-wrapper">
-              <span class="icon">👤</span>
-              <input type="text" id="loginUsername" placeholder="kullanici_adin" required />
+          <form id="registerForm" novalidate>
+            <div class="avatar-picker" id="regAvatarPicker">
+              <div class="avatar-preview" id="regAvatarPreview">👤</div>
+              <input type="file" id="regAvatarInput" accept="image/*" hidden />
+              <div class="avatar-hint"><strong>Profil fotoğrafı</strong>PNG/JPG, max 2 MB</div>
             </div>
-          </div>
 
-          <div class="form-group">
-            <label for="loginPassword">Şifre</label>
-            <div class="input-wrapper">
-              <span class="icon">🔒</span>
-              <input type="password" id="loginPassword" placeholder="••••••••" required />
-              <button type="button" class="toggle-password" data-target="loginPassword">👁️</button>
+            <div class="form-group">
+              <label for="regName">Ad Soyad</label>
+              <div class="input-wrapper">
+                <span class="icon">🧑</span>
+                <input type="text" id="regName" placeholder="Adınız Soyadınız" required />
+              </div>
             </div>
-          </div>
 
-          <div class="form-options">
-            <label class="checkbox-wrapper"><input type="checkbox" id="rememberMe" /> Beni hatırla</label>
-            <a href="#" class="forgot-link">Şifremi unuttum</a>
-          </div>
+            <div class="form-group">
+              <label for="regUsername">Kullanıcı Adı</label>
+              <div class="input-wrapper">
+                <span class="icon">👤</span>
+                <input type="text" id="regUsername" placeholder="kullanici_adin" required />
+              </div>
+            </div>
 
-          <button type="submit" class="btn-primary" id="loginBtn">🚀 Giriş Yap</button>
+            <div class="form-group">
+              <label for="regEmail">E-posta</label>
+              <div class="input-wrapper">
+                <span class="icon">📧</span>
+                <input type="email" id="regEmail" placeholder="kaptan@novadepo.com" required />
+              </div>
+            </div>
 
-          <div class="divider">veya şununla devam et</div>
+            <div class="form-group">
+              <label for="regPassword">Şifre</label>
+              <div class="input-wrapper">
+                <span class="icon">🔒</span>
+                <input type="password" id="regPassword" placeholder="En az 8 karakter" required />
+                <button type="button" class="toggle-password" data-target="regPassword">👁️</button>
+              </div>
+              <div class="strength-bar"><span></span><span></span><span></span><span></span></div>
+              <div class="strength-text" id="strengthText"></div>
+            </div>
 
-          <div class="social-buttons">
-            <button type="button" class="btn-social" data-provider="google" data-icon="🔵">🔵 Google</button>
-            <button type="button" class="btn-social" data-provider="github" data-icon="⚫">⚫ GitHub</button>
-            <button type="button" class="btn-social" data-provider="apple" data-icon="🍎">🍎 Apple</button>
-          </div>
+            <div class="form-group">
+              <label class="checkbox-wrapper">
+                <input type="checkbox" id="terms" required />
+                <span style="font-size:12px;">Kullanım koşullarını ve gizlilik politikasını kabul ediyorum</span>
+              </label>
+            </div>
 
-          <p class="switch-form">Hesabın yok mu? <button type="button" onclick="flipCard()">Kayıt Ol</button></p>
-        </form>
-      </div>
-    </div>
+            <button type="submit" class="btn-primary" id="registerBtn">🌌 Kayıt Ol</button>
 
-    <!-- ===== KAYIT ===== -->
-    <div class="card-face card-back">
-      <div class="brand-panel">
-        <div class="brand-logo">✨</div>
-        <div class="brand-name">NovaDepo</div>
-        <h1>Evrene Katıl!</h1>
-        <p>Ücretsiz 10 GB bulut depolama ile başla. Kayıt sadece 30 saniye sürer — ışık hızında!</p>
-        <ul class="brand-features">
-          <li>Ücretsiz 10 GB başlangıç alanı</li>
-          <li>7/24 galaktik destek</li>
-          <li>İstediğin zaman iptal</li>
-        </ul>
-        <div class="brand-stats">
-          <div><strong>10M+</strong><span>Kullanıcı</span></div>
-          <div><strong>99.9%</strong><span>Uptime</span></div>
-          <div><strong>150+</strong><span>Ülke</span></div>
+            <div class="divider">veya şununla kayıt ol</div>
+
+            <div class="social-buttons">
+              <button type="button" class="btn-social" data-provider="google" data-icon="🔵">Google</button>
+              <button type="button" class="btn-social" data-provider="github" data-icon="⚫">GitHub</button>
+              <button type="button" class="btn-social" data-provider="apple" data-icon="🍎">Apple</button>
+            </div>
+
+            <p class="switch-form">Zaten hesabın var mı? <button type="button" onclick="flipCard()">Giriş Yap</button></p>
+          </form>
         </div>
       </div>
 
-      <div class="form-panel">
-        <h2>Hesap Oluştur</h2>
-        <p class="subtitle">NovaDepo evrenine adım at</p>
-
-        <form id="registerForm" novalidate>
-          <div class="avatar-picker" id="regAvatarPicker">
-            <div class="avatar-preview" id="regAvatarPreview">👤</div>
-            <input type="file" id="regAvatarInput" accept="image/*" hidden />
-            <div class="avatar-hint"><strong>Profil fotoğrafı seç</strong>PNG/JPG, en fazla 2 MB</div>
-          </div>
-
-          <div class="form-group">
-            <label for="regName">Ad Soyad</label>
-            <div class="input-wrapper">
-              <span class="icon">🧑</span>
-              <input type="text" id="regName" placeholder="Adınız Soyadınız" required />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="regUsername">Kullanıcı Adı</label>
-            <div class="input-wrapper">
-              <span class="icon">👤</span>
-              <input type="text" id="regUsername" placeholder="kullanici_adin" required />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="regEmail">E-posta</label>
-            <div class="input-wrapper">
-              <span class="icon">📧</span>
-              <input type="email" id="regEmail" placeholder="kaptan@novadepo.com" required />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="regPassword">Şifre</label>
-            <div class="input-wrapper">
-              <span class="icon">🔒</span>
-              <input type="password" id="regPassword" placeholder="En az 8 karakter" required />
-              <button type="button" class="toggle-password" data-target="regPassword">👁️</button>
-            </div>
-            <div class="strength-bar"><span></span><span></span><span></span><span></span></div>
-            <div class="strength-text" id="strengthText"></div>
-          </div>
-
-          <div class="form-group">
-            <label class="checkbox-wrapper">
-              <input type="checkbox" id="terms" required />
-              <span style="font-size:12px;">Kullanım koşullarını ve gizlilik politikasını kabul ediyorum</span>
-            </label>
-          </div>
-
-          <button type="submit" class="btn-primary" id="registerBtn">🌌 Kayıt Ol</button>
-
-          <div class="divider">veya şununla kayıt ol</div>
-
-          <div class="social-buttons">
-            <button type="button" class="btn-social" data-provider="google" data-icon="🔵">🔵 Google</button>
-            <button type="button" class="btn-social" data-provider="github" data-icon="⚫">⚫ GitHub</button>
-            <button type="button" class="btn-social" data-provider="apple" data-icon="🍎">🍎 Apple</button>
-          </div>
-
-          <p class="switch-form">Zaten hesabın var mı? <button type="button" onclick="flipCard()">Giriş Yap</button></p>
-        </form>
-      </div>
     </div>
-
   </div>
-</div>
+</main>
+
+<!-- ALT BİLGİ -->
+<footer class="footer">
+  <p>© 2026 NovaDepo. Tüm hakları saklıdır. | <a href="#">Gizlilik Politikası</a> | <a href="#">Kullanım Koşulları</a> | <a href="#">🇹🇷 Türkçe</a></p>
+</footer>
 
 <!-- SOSYAL GİRİŞ MODALI -->
 <div class="modal-overlay" id="socialModal">
@@ -462,7 +500,7 @@
     <div class="modal-avatar-picker" id="modalAvatarPicker">
       <div class="avatar-preview" id="modalAvatarPreview">👤</div>
       <input type="file" id="modalAvatarInput" accept="image/*" hidden />
-      <div class="avatar-hint"><strong>Fotoğraf ekle</strong>(opsiyonel)</div>
+      <div class="avatar-hint"><strong>Fotoğraf ekle</strong> (opsiyonel)</div>
     </div>
 
     <input type="text" id="socialName" placeholder="Kullanıcı adın" />
@@ -475,23 +513,19 @@
 <script>
   // ===== OTURUM KONTROLÜ =====
   (function checkSession() {
-    try {
-      if (localStorage.getItem('novaUser')) window.location.replace('./anamenu/');
-    } catch (e) {}
+    try { if (localStorage.getItem('novaUser')) window.location.replace('./anamenu/'); } catch (e) {}
   })();
 
   // ===== YILDIZLAR =====
   (function createStars() {
     const box = document.getElementById('stars');
     if (!box) return;
-    for (let i = 0; i < 180; i++) {
+    for (let i = 0; i < 200; i++) {
       const s = document.createElement('div');
       s.className = 'star';
       const size = Math.random() * 2.2 + 0.6;
-      s.style.width = size + 'px';
-      s.style.height = size + 'px';
-      s.style.left = Math.random() * 100 + '%';
-      s.style.top = Math.random() * 100 + '%';
+      s.style.width = size + 'px'; s.style.height = size + 'px';
+      s.style.left = Math.random() * 100 + '%'; s.style.top = Math.random() * 100 + '%';
       s.style.animationDelay = (Math.random() * 3) + 's';
       s.style.animationDuration = (Math.random() * 2.5 + 2) + 's';
       box.appendChild(s);
@@ -524,7 +558,7 @@
     });
   });
 
-  // ===== PROFİL FOTOĞRAFI SEÇİCİ (ortak) =====
+  // ===== PROFİL FOTOĞRAFI SEÇİCİ =====
   function setupAvatarPicker(pickerId, inputId, previewId) {
     const picker = document.getElementById(pickerId);
     const input = document.getElementById(inputId);
@@ -541,7 +575,7 @@
         preview.innerHTML = '<img src="' + ev.target.result + '" alt="profil" />';
         preview.dataset.avatar = ev.target.result;
       };
-      reader.onerror = () => showToast('⚠️ Dosya okunamadı, tekrar deneyin');
+      reader.onerror = () => showToast('⚠️ Dosya okunamadı');
       reader.readAsDataURL(file);
     });
   }
@@ -626,12 +660,8 @@
     });
   }
 
-  // ===== SOSYAL GİRİŞ MODALI (eklentisiz, çalışır) =====
-  const providers = {
-    google: { name: 'Google', icon: '🔵' },
-    github: { name: 'GitHub', icon: '⚫' },
-    apple:  { name: 'Apple',  icon: '🍎' }
-  };
+  // ===== SOSYAL GİRİŞ MODALI =====
+  const providers = { google: { name: 'Google', icon: '🔵' }, github: { name: 'GitHub', icon: '⚫' }, apple: { name: 'Apple', icon: '🍎' } };
   let currentProvider = 'google';
 
   const socialModal = document.getElementById('socialModal');
@@ -649,9 +679,7 @@
     if (modalAvatarPreview) { modalAvatarPreview.innerHTML = '👤'; delete modalAvatarPreview.dataset.avatar; }
     if (socialModal) socialModal.classList.add('active');
   }
-  function closeSocialModal() {
-    if (socialModal) socialModal.classList.remove('active');
-  }
+  function closeSocialModal() { if (socialModal) socialModal.classList.remove('active'); }
 
   document.querySelectorAll('.btn-social').forEach(btn => {
     btn.addEventListener('click', () => openSocialModal(btn.dataset.provider || 'google'));
@@ -670,15 +698,12 @@
       const info = providers[currentProvider] || providers.google;
       const avatar = (modalAvatarPreview && modalAvatarPreview.dataset.avatar) || null;
       const email = name.toLowerCase().replace(/\s/g, '') + '@' + currentProvider + '.com';
-      socialContinue.disabled = true;
-      socialContinue.textContent = '⏳ Bağlanıyor...';
+      socialContinue.disabled = true; socialContinue.textContent = '⏳ Bağlanıyor...';
       saveSession(name, email, avatar, info.name);
       showToast('✅ ' + info.name + ' ile giriş başarılı!');
       setTimeout(() => {
-        socialContinue.disabled = false;
-        socialContinue.textContent = 'Devam Et 🚀';
-        closeSocialModal();
-        goToMenu();
+        socialContinue.disabled = false; socialContinue.textContent = 'Devam Et 🚀';
+        closeSocialModal(); goToMenu();
       }, 900);
     });
   }
