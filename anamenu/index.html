@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NovaDepo • Ana Menü</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary: #8b5cf6;
+    --primary-dark: #6d28d9;
+    --accent: #06b6d4;
+    --accent-2: #ec4899;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --space-1: #0f0c29;
+    --space-2: #302b63;
+    --space-3: #24243e;
+    --card-bg: rgba(255, 255, 255, 0.96);
+  }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--space-1) 0%, var(--space-2) 50%, var(--space-3) 100%);
+    color: var(--text);
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ===== UZAY ARKA PLANI (giriş sayfasıyla aynı) ===== */
+  .space-bg { position: fixed; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; }
+  .nebula { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.35; animation: nebulaPulse 12s ease-in-out infinite alternate; }
+  .nebula-1 { width: 500px; height: 500px; top: -150px; left: -100px; background: radial-gradient(circle, #8b5cf6, transparent 70%); }
+  .nebula-2 { width: 450px; height: 450px; bottom: -150px; right: -100px; background: radial-gradient(circle, #06b6d4, transparent 70%); animation-delay: 3s; }
+  .nebula-3 { width: 350px; height: 350px; top: 40%; left: 55%; background: radial-gradient(circle, #ec4899, transparent 70%); opacity: 0.2; animation-delay: 6s; }
+  @keyframes nebulaPulse { from { transform: scale(1); opacity: 0.25; } to { transform: scale(1.2); opacity: 0.45; } }
+  .star { position: absolute; background: white; border-radius: 50%; animation: twinkle 3s ease-in-out infinite; }
+  @keyframes twinkle { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
+  .shooting-star { position: absolute; width: 3px; height: 3px; background: white; border-radius: 50%; box-shadow: 0 0 8px 2px rgba(255,255,255,0.6); animation: shoot 6s linear infinite; }
+  .shooting-star::before { content: ''; position: absolute; top: 50%; right: 0; width: 120px; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.7), transparent); transform: translateY(-50%); }
+  .shooting-star:nth-child(1) { top: 15%; left: -5%; animation-delay: 0s; }
+  .shooting-star:nth-child(2) { top: 45%; left: -5%; animation-delay: 3s; }
+  .shooting-star:nth-child(3) { top: 70%; left: -5%; animation-delay: 5s; }
+  @keyframes shoot { 0% { transform: translate(0,0) rotate(-25deg); opacity: 0; } 5% { opacity: 1; } 20% { transform: translate(110vw, 40vh) rotate(-25deg); opacity: 0; } 100% { transform: translate(110vw, 40vh) rotate(-25deg); opacity: 0; } }
+  .planet-saturn { position: absolute; top: 8%; right: 4%; width: 90px; height: 90px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #fbbf24, #d97706 60%, #92400e); box-shadow: inset -12px -12px 25px rgba(0,0,0,0.4), 0 0 35px rgba(251,191,36,0.3); animation: floatPlanet 10s ease-in-out infinite; }
+  .planet-saturn::before { content: ''; position: absolute; top: 50%; left: 50%; width: 155px; height: 40px; border: 5px solid rgba(251,191,36,0.5); border-radius: 50%; transform: translate(-50%, -50%) rotate(-20deg); border-top-color: transparent; border-left-color: rgba(251,191,36,0.25); }
+  .planet-blue { position: absolute; bottom: 8%; left: 3%; width: 60px; height: 60px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #67e8f9, #0891b2 55%, #164e63); box-shadow: inset -8px -8px 16px rgba(0,0,0,0.4), 0 0 25px rgba(6,182,212,0.4); animation: floatPlanet 8s ease-in-out infinite reverse; }
+  @keyframes floatPlanet { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+  /* ===== ÜST BAR ===== */
+  .navbar {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 28px;
+    background: rgba(15, 12, 41, 0.75);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+  }
+  .nav-brand { display: flex; align-items: center; gap: 10px; color: white; }
+  .nav-brand .logo { font-size: 26px; animation: floatPlanet 6s ease-in-out infinite; }
+  .nav-brand .name { font-size: 18px; font-weight: 700; letter-spacing: 2px; }
+  .nav-brand .name span { color: var(--accent); }
+
+  .nav-search {
+    flex: 1; max-width: 380px; margin: 0 24px; position: relative;
+  }
+  .nav-search input {
+    width: 100%; padding: 9px 14px 9px 36px; border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1);
+    color: white; font-size: 13px; transition: all 0.25s;
+  }
+  .nav-search input::placeholder { color: rgba(255,255,255,0.5); }
+  .nav-search input:focus { outline: none; background: rgba(255,255,255,0.18); border-color: var(--accent); }
+  .nav-search .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: 0.7; }
+
+  .nav-user { display: flex; align-items: center; gap: 14px; }
+  .user-chip { display: flex; align-items: center; gap: 8px; color: white; font-size: 13px; }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 15px;
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
+  }
+  .btn-logout {
+    padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.5);
+    background: rgba(239, 68, 68, 0.15); color: #fca5a5; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-logout:hover { background: rgba(239, 68, 68, 0.3); color: white; }
+
+  /* ===== İÇERİK ===== */
+  .main { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 30px 24px 60px; }
+
+  .welcome { color: white; margin-bottom: 24px; }
+  .welcome h1 { font-size: 28px; margin-bottom: 6px; }
+  .welcome h1 .highlight { background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .welcome p { font-size: 14px; opacity: 0.8; }
+
+  /* Depolama kartı */
+  .storage-card {
+    background: var(--card-bg); border-radius: 18px; padding: 22px 26px; margin-bottom: 24px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.35); border: 1px solid rgba(139, 92, 246, 0.2);
+    display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+  }
+  .storage-info { flex: 1; min-width: 220px; }
+  .storage-info .label { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  .storage-info .value { font-size: 22px; font-weight: 700; color: var(--text); }
+  .storage-info .value span { font-size: 14px; color: var(--muted); font-weight: 500; }
+  .progress-track { height: 10px; background: #e5e7eb; border-radius: 6px; margin-top: 12px; overflow: hidden; }
+  .progress-fill {
+    height: 100%; width: 0; border-radius: 6px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .storage-ring {
+    width: 90px; height: 90px; border-radius: 50%;
+    background: conic-gradient(var(--primary) 0% 32%, #e5e7eb 32% 100%);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .storage-ring-inner {
+    width: 68px; height: 68px; border-radius: 50%; background: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 16px; color: var(--primary);
+  }
+
+  /* Hızlı eylemler */
+  .section-title { color: white; font-size: 16px; margin: 26px 0 14px; display: flex; align-items: center; gap: 8px; }
+  .quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+  .action-btn {
+    background: var(--card-bg); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 14px;
+    padding: 18px 16px; cursor: pointer; transition: all 0.25s; text-align: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  }
+  .action-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(139, 92, 246, 0.35); border-color: var(--primary); }
+  .action-btn .icon { font-size: 28px; display: block; margin-bottom: 8px; }
+  .action-btn .text { font-size: 13px; font-weight: 600; color: var(--text); }
+
+  /* Dosya ızgarası */
+  .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+  .file-card {
+    background: var(--card-bg); border: 1px solid rgba(139, 92, 246, 0.15); border-radius: 14px;
+    padding: 18px 14px; cursor: pointer; transition: all 0.25s; text-align: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25); position: relative;
+  }
+  .file-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 12px 28px rgba(6, 182, 212, 0.3); border-color: var(--accent); }
+  .file-card .file-icon { font-size: 40px; display: block; margin-bottom: 10px; }
+  .file-card .file-name { font-size: 13px; font-weight: 600; color: var(--text); word-break: break-word; }
+  .file-card .file-meta { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .file-card .badge {
+    position: absolute; top: 8px; right: 8px; font-size: 10px; padding: 2px 7px;
+    border-radius: 10px; background: rgba(139, 92, 246, 0.15); color: var(--primary); font-weight: 600;
+  }
+
+  @media (max-width: 640px) {
+    .nav-search { display: none; }
+    .navbar { padding: 12px 16px; }
+    .user-chip .user-name { display: none; }
+    .welcome h1 { font-size: 22px; }
+    .storage-ring { display: none; }
+  }
+
+  .toast {
+    position: fixed; top: 20px; right: 20px; padding: 14px 20px; background: white; border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); font-size: 14px; z-index: 100; transform: translateX(120%);
+    transition: transform 0.3s; border-left: 4px solid var(--success); max-width: 320px;
+  }
+  .toast.show { transform: translateX(0); }
+</style>
+</head>
+<body>
+
+<div class="space-bg" id="spaceBg">
+  <div class="nebula nebula-1"></div>
+  <div class="nebula nebula-2"></div>
+  <div class="nebula nebula-3"></div>
+  <div class="shooting-star"></div>
+  <div class="shooting-star"></div>
+  <div class="shooting-star"></div>
+  <div class="planet-saturn"></div>
+  <div class="planet-blue"></div>
+</div>
+
+<!-- ÜST BAR -->
+<nav class="navbar">
+  <div class="nav-brand">
+    <span class="logo">🪐</span>
+    <span class="name">NOVA<span>DEPO</span></span>
+  </div>
+
+  <div class="nav-search">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Dosya veya klasör ara..." />
+  </div>
+
+  <div class="nav-user">
+    <div class="user-chip">
+      <div class="avatar" id="avatar">N</div>
+      <span class="user-name" id="userName">Kullanıcı</span>
+    </div>
+    <button class="btn-logout" id="logoutBtn">Çıkış 🚪</button>
+  </div>
+</nav>
+
+<!-- İÇERİK -->
+<main class="main">
+  <div class="welcome">
+    <h1>Hoş geldin, <span class="highlight" id="welcomeName">Kaptan</span>! 🌌</h1>
+    <p>Evrenin güvende. İşte bugünkü galaktik depolama durumun.</p>
+  </div>
+
+  <!-- DEPOLAMA -->
+  <div class="storage-card">
+    <div class="storage-info">
+      <div class="label">☁️ Depolama Alanı</div>
+      <div class="value">3.2 GB <span>/ 10 GB kullanıldı</span></div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+    <div class="storage-ring">
+      <div class="storage-ring-inner">%32</div>
+    </div>
+  </div>
+
+  <!-- HIZLI EYLEMLER -->
+  <h2 class="section-title">⚡ Hızlı Eylemler</h2>
+  <div class="quick-actions">
+    <button class="action-btn" data-action="yükle"><span class="icon">📤</span><span class="text">Dosya Yükle</span></button>
+    <button class="action-btn" data-action="klasör"><span class="icon">📁</span><span class="text">Yeni Klasör</span></button>
+    <button class="action-btn" data-action="paylaş"><span class="icon">🔗</span><span class="text">Paylaş</span></button>
+    <button class="action-btn" data-action="favori"><span class="icon">⭐</span><span class="text">Favoriler</span></button>
+  </div>
+
+  <!-- DOSYALAR -->
+  <h2 class="section-title">🗂️ Dosyaların</h2>
+  <div class="file-grid" id="fileGrid">
+    <div class="file-card" data-name="Projeler"><span class="badge">Klasör</span><span class="file-icon">📁</span><div class="file-name">Projeler</div><div class="file-meta">24 öğe</div></div>
+    <div class="file-card" data-name="Fotoğraflar"><span class="badge">Klasör</span><span class="file-icon">📁</span><div class="file-name">Fotoğraflar</div><div class="file-meta">128 öğe</div></div>
+    <div class="file-card" data-name="Belgeler"><span class="badge">Klasör</span><span class="file-icon">📁</span><div class="file-name">Belgeler</div><div class="file-meta">56 öğe</div></div>
+    <div class="file-card" data-name="Müzik"><span class="badge">Klasör</span><span class="file-icon">📁</span><div class="file-name">Müzik</div><div class="file-meta">89 öğe</div></div>
+    <div class="file-card" data-name="rapor.pdf"><span class="file-icon">📄</span><div class="file-name">rapor.pdf</div><div class="file-meta">2.4 MB</div></div>
+    <div class="file-card" data-name="uzay.jpg"><span class="file-icon">🖼️</span><div class="file-name">uzay.jpg</div><div class="file-meta">5.1 MB</div></div>
+    <div class="file-card" data-name="bütçe.xlsx"><span class="file-icon">📊</span><div class="file-name">bütçe.xlsx</div><div class="file-meta">840 KB</div></div>
+    <div class="file-card" data-name="galaksi.mp4"><span class="file-icon">🎬</span><div class="file-name">galaksi.mp4</div><div class="file-meta">120 MB</div></div>
+  </div>
+</main>
+
+<div class="toast" id="toast">✅ İşlem başarılı!</div>
+
+<script>
+  // ===== OTURUM KORUMASI: giriş yoksa ana sayfaya gönder =====
+  (function guard() {
+    let user = null;
+    try { user = JSON.parse(localStorage.getItem('novaUser')); } catch (e) { user = null; }
+    if (!user) {
+      window.location.replace('../');
+      return;
+    }
+    // Arayüzü kullanıcıyla doldur
+    const name = user.name || 'Kaptan';
+    const initial = name.charAt(0).toUpperCase();
+    const avatar = document.getElementById('avatar');
+    const userName = document.getElementById('userName');
+    const welcomeName = document.getElementById('welcomeName');
+    if (avatar) avatar.textContent = initial;
+    if (userName) userName.textContent = name;
+    if (welcomeName) welcomeName.textContent = name;
+  })();
+
+  // ===== YILDIZLAR =====
+  (function createStars() {
+    const spaceBg = document.getElementById('spaceBg');
+    if (!spaceBg) return;
+    for (let i = 0; i < 140; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      const size = Math.random() * 2 + 1;
+      star.style.width = size + 'px';
+      star.style.height = size + 'px';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.animationDelay = (Math.random() * 3) + 's';
+      star.style.animationDuration = (Math.random() * 2 + 2) + 's';
+      spaceBg.appendChild(star);
+    }
+  })();
+
+  // ===== DEPOLAMA ÇUBUĞU ANİMASYONU =====
+  window.addEventListener('load', () => {
+    const fill = document.getElementById('progressFill');
+    if (fill) setTimeout(() => { fill.style.width = '32%'; }, 300);
+  });
+
+  // ===== TOAST =====
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  // ===== ÇIKIŞ: oturumu sil ve giriş sayfasına dön =====
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      try { localStorage.removeItem('novaUser'); } catch (e) {}
+      showToast('👋 Çıkış yapıldı. Görüşürüz!');
+      setTimeout(() => { window.location.replace('../'); }, 800);
+    });
+  }
+
+  // ===== HIZLI EYLEMLER =====
+  document.querySelectorAll('.action-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const action = btn.dataset.action;
+      const messages = {
+        'yükle': '📤 Yükleme penceresi açılıyor...',
+        'klasör': '📁 Yeni klasör oluşturuldu!',
+        'paylaş': '🔗 Paylaşım bağlantısı kopyalandı!',
+        'favori': '⭐ Favoriler listeleniyor...'
+      };
+      showToast(messages[action] || '✨ İşlem yapıldı');
+    });
+  });
+
+  // ===== DOSYA TIKLAMA =====
+  document.querySelectorAll('.file-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const name = card.dataset.name || 'öğe';
+      showToast('🚀 "' + name + '" açılıyor...');
+    });
+  });
+
+  // ===== ARAMA FİLTRESİ =====
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.toLowerCase().trim();
+      document.querySelectorAll('.file-card').forEach(card => {
+        const name = (card.dataset.name || '').toLowerCase();
+        card.style.display = name.includes(q) ? '' : 'none';
+      });
+    });
+  }
+</script>
+
+</body>
+</html>
