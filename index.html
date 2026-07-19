@@ -31,12 +31,8 @@
     position: relative;
   }
 
-  /* ===== AŞIRI GERÇEKÇİ GALAKSİ ARKA PLANI ===== */
-  #galaxy-canvas {
-    position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  }
+  #galaxy-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
-  /* ===== ÜST BAR ===== */
   .navbar {
     position: sticky; top: 0; z-index: 10;
     display: flex; align-items: center; justify-content: space-between;
@@ -82,7 +78,6 @@
   }
   .btn-logout:hover { background: rgba(239, 68, 68, 0.25); color: white; border-color: var(--danger); }
 
-  /* ===== İÇERİK ===== */
   .main { 
     position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 30px 24px 60px; 
     transition: all 0.3s ease;
@@ -102,32 +97,31 @@
   }
   .welcome p { font-size: 14px; opacity: 0.8; }
 
+  /* YENİ: GERÇEK DEPOLAMA PANELİ */
   .storage-card {
-    background: var(--card-bg); border-radius: 18px; padding: 22px 26px; margin-bottom: 24px;
+    background: var(--card-bg); border-radius: 18px; padding: 24px; margin-bottom: 24px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.4); border: 1px solid var(--card-border);
     backdrop-filter: blur(12px);
-    display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
   }
-  .storage-info { flex: 1; min-width: 220px; }
-  .storage-info .label { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
-  .storage-info .value { font-size: 22px; font-weight: 700; color: white; }
-  .storage-info .value span { font-size: 14px; color: var(--muted); font-weight: 500; }
-  .progress-track { height: 10px; background: rgba(255,255,255,0.1); border-radius: 6px; margin-top: 12px; overflow: hidden; }
+  .storage-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+  .storage-title { font-size: 16px; font-weight: 700; color: white; display: flex; align-items: center; gap: 8px; }
+  .storage-badge { 
+    font-size: 11px; padding: 4px 10px; border-radius: 20px; 
+    background: rgba(16, 185, 129, 0.15); color: var(--success); font-weight: 600; 
+  }
+  
+  .storage-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 16px; }
+  .stat-box { background: rgba(255,255,255,0.03); padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+  .stat-box .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .stat-box .value { font-size: 18px; font-weight: 700; color: white; }
+  .stat-box .value.highlight { color: var(--accent); }
+  .stat-box .value.danger { color: var(--danger); }
+
+  .progress-track { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
   .progress-fill {
-    height: 100%; width: 0; border-radius: 6px;
+    height: 100%; width: 0; border-radius: 4px;
     background: linear-gradient(90deg, var(--primary), var(--accent));
     transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .storage-ring {
-    width: 90px; height: 90px; border-radius: 50%; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    background: conic-gradient(var(--primary) 0% 0%, rgba(255,255,255,0.1) 0% 100%);
-    transition: background 0.8s ease;
-  }
-  .storage-ring-inner {
-    width: 68px; height: 68px; border-radius: 50%; background: rgba(15, 12, 41, 0.9);
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 16px; color: var(--accent);
   }
 
   .section-title { color: white; font-size: 16px; margin: 26px 0 14px; display: flex; align-items: center; gap: 8px; }
@@ -186,7 +180,6 @@
     .navbar { padding: 12px 16px; }
     .user-chip .user-name { display: none; }
     .welcome h1 { font-size: 22px; }
-    .storage-ring { display: none; }
   }
 
   .toast {
@@ -215,7 +208,6 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ===== MODALLAR ===== */
   .modal-overlay {
     position: fixed; inset: 0; z-index: 200; display: none;
     align-items: center; justify-content: center; padding: 20px;
@@ -251,7 +243,6 @@
   }
   .btn-modal:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(139, 92, 246, 0.55); }
   
-  /* Önizleme Modalı Özel */
   #previewImage {
     max-width: 100%; max-height: 60vh; border-radius: 12px; margin-bottom: 16px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -292,16 +283,30 @@
     <p>Dosyalarını buraya sürükleyip bırakabilir veya aşağıdaki butonları kullanabilirsin.</p>
   </div>
 
+  <!-- GERÇEK DEPOLAMA PANELİ -->
   <div class="storage-card">
-    <div class="storage-info">
-      <div class="label">☁️ Depolama Alanı</div>
-      <div class="value" id="storageValue">0 B <span>/ 10 GB kullanıldı</span></div>
-      <div class="progress-track">
-        <div class="progress-fill" id="progressFill"></div>
+    <div class="storage-header">
+      <div class="storage-title">💾 Yerel Depolama Durumu</div>
+      <div class="storage-badge" id="storageStatusBadge">Sağlıklı</div>
+    </div>
+    
+    <div class="storage-stats">
+      <div class="stat-box">
+        <div class="label">Toplam Kota</div>
+        <div class="value" id="statQuota">Hesaplanıyor...</div>
+      </div>
+      <div class="stat-box">
+        <div class="label">NovaDepo Kullanımı</div>
+        <div class="value highlight" id="statUsed">0 B</div>
+      </div>
+      <div class="stat-box">
+        <div class="label">Kalan Boş Alan</div>
+        <div class="value" id="statAvailable">Hesaplanıyor...</div>
       </div>
     </div>
-    <div class="storage-ring" id="storageRing">
-      <div class="storage-ring-inner" id="storagePercent">%0</div>
+
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
     </div>
   </div>
 
@@ -313,13 +318,12 @@
     <button class="action-btn" id="btnClear"><span class="icon">🗑️</span><span class="text">Tümünü Temizle</span></button>
   </div>
 
-  <!-- Dosyalar başlığı kaldırıldı, grid doğrudan burada -->
   <div class="file-grid" id="fileGrid"></div>
 </main>
 
 <input type="file" id="fileInput" multiple />
 
-<!-- KLASÖR OLUŞTUR MODAL -->
+<!-- MODALLAR -->
 <div class="modal-overlay" id="folderModal">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal('folderModal')">✕</button>
@@ -331,7 +335,6 @@
   </div>
 </div>
 
-<!-- YENİDEN ADLANDIR MODAL -->
 <div class="modal-overlay" id="renameModal">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal('renameModal')">✕</button>
@@ -343,7 +346,6 @@
   </div>
 </div>
 
-<!-- ÖNİZLEME MODAL -->
 <div class="modal-overlay" id="previewModal">
   <div class="modal-box" style="max-width: 600px;">
     <button class="modal-close" onclick="closeModal('previewModal')">✕</button>
@@ -361,7 +363,6 @@
   // ==========================================================
   const DB_NAME = 'NovaDepoDB';
   const STORE_NAME = 'files';
-  const MAX_STORAGE = 10 * 1024 * 1024 * 1024;
 
   function initDB() {
     return new Promise((resolve, reject) => {
@@ -417,10 +418,6 @@
     });
   }
 
-  async function seedDefaults() {
-    // Başlangıçta varsayılan dosya eklenmez, tamamen temiz sayfa açılır.
-  }
-
   // ==========================================================
   // 2. ARAYÜZ VE YARDIMCI FONKSİYONLAR
   // ==========================================================
@@ -451,7 +448,56 @@
   let currentRenameId = null;
   let currentPreviewUrl = null;
 
+  // GERÇEK DEPOLAMA BİLGİSİNİ GÜNCELLE
+  async function updateRealStorageInfo() {
+    const allFiles = await dbGetAll();
+    const novaDepoUsage = allFiles.reduce((acc, f) => acc + (f.size || 0), 0);
+    
+    document.getElementById('statUsed').textContent = formatBytes(novaDepoUsage);
+
+    if ('storage' in navigator && 'estimate' in navigator.storage) {
+      try {
+        const estimate = await navigator.storage.estimate();
+        const quota = estimate.quota || 0;
+        const usage = estimate.usage || 0;
+        const available = quota - usage;
+
+        document.getElementById('statQuota').textContent = formatBytes(quota);
+        document.getElementById('statAvailable').textContent = formatBytes(available);
+
+        const percent = quota > 0 ? Math.min((usage / quota) * 100, 100) : 0;
+        document.getElementById('progressFill').style.width = `${percent}%`;
+
+        const badge = document.getElementById('storageStatusBadge');
+        if (percent > 90) {
+          badge.textContent = 'Kritik Düşük Alan';
+          badge.style.background = 'rgba(239, 68, 68, 0.15)';
+          badge.style.color = 'var(--danger)';
+          document.getElementById('statAvailable').classList.add('danger');
+        } else if (percent > 70) {
+          badge.textContent = 'Dikkat';
+          badge.style.background = 'rgba(245, 158, 11, 0.15)';
+          badge.style.color = '#f59e0b';
+          document.getElementById('statAvailable').classList.remove('danger');
+        } else {
+          badge.textContent = 'Sağlıklı';
+          badge.style.background = 'rgba(16, 185, 129, 0.15)';
+          badge.style.color = 'var(--success)';
+          document.getElementById('statAvailable').classList.remove('danger');
+        }
+      } catch (err) {
+        document.getElementById('statQuota').textContent = 'Kısıtlı';
+        document.getElementById('statAvailable').textContent = 'Bilinmiyor';
+      }
+    } else {
+      document.getElementById('statQuota').textContent = 'Desteklenmiyor';
+      document.getElementById('statAvailable').textContent = 'Bilinmiyor';
+    }
+  }
+
   async function refreshAll() {
+    await updateRealStorageInfo();
+    
     const allFiles = await dbGetAll();
     let filtered = allFiles.filter(f => f.name.toLowerCase().includes(currentFilter.toLowerCase()));
     
@@ -460,14 +506,6 @@
       if (!a.isFolder && b.isFolder) return 1;
       return currentSortAsc ? a.name.localeCompare(b.name, 'tr') : b.name.localeCompare(a.name, 'tr');
     });
-
-    const totalUsed = allFiles.reduce((acc, f) => acc + (f.size || 0), 0);
-    const percent = Math.min((totalUsed / MAX_STORAGE) * 100, 100);
-    
-    document.getElementById('storageValue').innerHTML = `${formatBytes(totalUsed)} <span>/ ${formatBytes(MAX_STORAGE)} kullanıldı</span>`;
-    document.getElementById('progressFill').style.width = `${percent}%`;
-    document.getElementById('storagePercent').textContent = `%${Math.round(percent)}`;
-    document.getElementById('storageRing').style.background = `conic-gradient(var(--primary) 0% ${percent}%, rgba(255,255,255,0.1) ${percent}% 100%)`;
 
     document.getElementById('clearSearch').style.display = currentFilter ? 'block' : 'none';
 
@@ -525,7 +563,6 @@
             a.click();
             document.body.removeChild(a);
           };
-          
           showModal('previewModal');
         } else {
           showToast('⏳ Dosya indiriliyor...');
@@ -751,8 +788,7 @@
   }
 
   (async () => {
-    await seedDefaults();
-    refreshAll();
+    await refreshAll();
   })();
 
 
