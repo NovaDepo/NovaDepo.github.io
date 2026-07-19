@@ -60,6 +60,11 @@
   .nav-search input::placeholder { color: rgba(255,255,255,0.4); }
   .nav-search input:focus { outline: none; background: rgba(255,255,255,0.1); border-color: var(--accent); }
   .nav-search .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: 0.6; }
+  .nav-search .clear-search {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; display: none;
+  }
+  .nav-search .clear-search:hover { color: white; }
 
   .nav-user { display: flex; align-items: center; gap: 14px; }
   .user-chip { display: flex; align-items: center; gap: 8px; color: white; font-size: 13px; }
@@ -82,7 +87,6 @@
     position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 30px 24px 60px; 
     transition: all 0.3s ease;
   }
-  /* Sürükle Bırak Efekti */
   .main.drag-over {
     outline: 3px dashed var(--accent);
     outline-offset: -10px;
@@ -98,7 +102,6 @@
   }
   .welcome p { font-size: 14px; opacity: 0.8; }
 
-  /* Depolama kartı */
   .storage-card {
     background: var(--card-bg); border-radius: 18px; padding: 22px 26px; margin-bottom: 24px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.4); border: 1px solid var(--card-border);
@@ -127,7 +130,6 @@
     font-weight: 700; font-size: 16px; color: var(--accent);
   }
 
-  /* Hızlı eylemler */
   .section-title { color: white; font-size: 16px; margin: 26px 0 14px; display: flex; align-items: center; gap: 8px; }
   .quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
   .action-btn {
@@ -140,7 +142,6 @@
   .action-btn .icon { font-size: 28px; display: block; margin-bottom: 8px; }
   .action-btn .text { font-size: 13px; font-weight: 600; }
 
-  /* Dosya ızgarası */
   .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
   .file-card {
     background: var(--card-bg); border: 1px solid rgba(139, 92, 246, 0.15); border-radius: 14px;
@@ -155,14 +156,30 @@
     position: absolute; top: 8px; right: 8px; font-size: 10px; padding: 2px 7px;
     border-radius: 10px; background: rgba(139, 92, 246, 0.2); color: #c4b5fd; font-weight: 600;
   }
-  .file-card .delete-btn {
-    position: absolute; top: 8px; left: 8px; width: 26px; height: 26px;
-    border-radius: 50%; border: none; background: rgba(239, 68, 68, 0.2); 
-    color: #fca5a5; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    opacity: 0; transition: all 0.2s; font-size: 12px;
+  .file-card .action-btns {
+    position: absolute; top: 8px; left: 8px; display: flex; gap: 6px; opacity: 0; transition: all 0.2s;
   }
-  .file-card:hover .delete-btn { opacity: 1; }
-  .file-card .delete-btn:hover { background: var(--danger); color: white; }
+  .file-card:hover .action-btns { opacity: 1; }
+  .file-card .icon-btn {
+    width: 26px; height: 26px; border-radius: 50%; border: none; 
+    background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer; 
+    display: flex; align-items: center; justify-content: center; font-size: 12px;
+    transition: all 0.2s;
+  }
+  .file-card .icon-btn.delete { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+  .file-card .icon-btn.delete:hover { background: var(--danger); color: white; }
+  .file-card .icon-btn.rename:hover { background: var(--primary); color: white; }
+
+  .empty-state {
+    grid-column: 1/-1; text-align: center; color: var(--muted); padding: 60px 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+  }
+  .empty-state .icon { font-size: 48px; opacity: 0.5; }
+  .empty-state .btn { 
+    padding: 10px 20px; background: var(--primary); color: white; border: none; 
+    border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s;
+  }
+  .empty-state .btn:hover { background: var(--primary-dark); }
 
   @media (max-width: 640px) {
     .nav-search { display: none; }
@@ -183,14 +200,12 @@
   .toast.show { transform: translateX(0); }
   .toast.error { border-left-color: var(--danger); }
 
-  /* Gizli dosya inputu */
   #fileInput { display: none; }
 
-  /* Yükleme Animasyonu */
   .loading-overlay {
-    position: fixed; inset: 0; background: rgba(2, 0, 20, 0.8); z-index: 999;
+    position: fixed; inset: 0; background: rgba(2, 0, 20, 0.85); z-index: 999;
     display: none; align-items: center; justify-content: center; flex-direction: column;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(8px);
   }
   .loading-overlay.active { display: flex; }
   .spinner {
@@ -199,31 +214,69 @@
     animation: spin 1s linear infinite; margin-bottom: 12px;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== MODALLAR ===== */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200; display: none;
+    align-items: center; justify-content: center; padding: 20px;
+    background: rgba(2, 0, 20, 0.85); backdrop-filter: blur(8px);
+  }
+  .modal-overlay.active { display: flex; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal-box {
+    background: rgba(15, 12, 41, 0.95); border: 1px solid var(--card-border);
+    border-radius: 20px; padding: 30px 28px; width: 100%; max-width: 380px;
+    text-align: center; position: relative; box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: var(--text);
+  }
+  @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-close {
+    position: absolute; top: 14px; right: 14px; width: 30px; height: 30px; border-radius: 50%;
+    border: none; background: rgba(255,255,255,0.1); cursor: pointer; font-size: 14px; color: var(--muted); transition: all 0.2s;
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.2); color: white; }
+  .modal-icon { font-size: 44px; margin-bottom: 8px; }
+  .modal-box h3 { font-size: 20px; margin-bottom: 4px; color: white; }
+  .modal-box .modal-sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+  .modal-input {
+    width: 100%; padding: 12px 14px; border: 1.5px solid var(--card-border); border-radius: 10px;
+    font-size: 14px; margin-bottom: 14px; transition: all 0.25s; background: rgba(255,255,255,0.05); color: white;
+  }
+  .modal-input::placeholder { color: rgba(255,255,255,0.3); }
+  .modal-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(139,92,246,0.15); }
+  .btn-modal {
+    width: 100%; padding: 12px; background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white; border: none; border-radius: 10px; font-size: 14.5px; font-weight: 600; cursor: pointer;
+    transition: all 0.25s; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+  }
+  .btn-modal:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(139, 92, 246, 0.55); }
+  
+  /* Önizleme Modalı Özel */
+  #previewImage {
+    max-width: 100%; max-height: 60vh; border-radius: 12px; margin-bottom: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
 </style>
 </head>
 <body>
 
-<!-- GERÇEKÇİ GALAKSİ CANVAS -->
 <canvas id="galaxy-canvas"></canvas>
 
-<!-- YÜKLEME EKRANI -->
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner"></div>
   <p style="color: white; font-size: 14px;">Dosyalar işleniyor...</p>
 </div>
 
-<!-- ÜST BAR -->
 <nav class="navbar">
   <div class="nav-brand">
     <span class="logo">🪐</span>
     <span class="name">NOVA<span>DEPO</span></span>
   </div>
-
   <div class="nav-search">
     <span class="search-icon">🔍</span>
     <input type="text" id="searchInput" placeholder="Dosya veya klasör ara..." />
+    <button class="clear-search" id="clearSearch">✕</button>
   </div>
-
   <div class="nav-user">
     <div class="user-chip">
       <div class="avatar" id="avatar">N</div>
@@ -233,14 +286,12 @@
   </div>
 </nav>
 
-<!-- İÇERİK (Sürükle Bırak Alanı) -->
 <main class="main" id="dropZone">
   <div class="welcome">
     <h1>Hoş geldin, <span class="highlight" id="welcomeName">Kaptan</span>! 🌌</h1>
     <p>Dosyalarını buraya sürükleyip bırakabilir veya aşağıdaki butonları kullanabilirsin.</p>
   </div>
 
-  <!-- GERÇEK DEPOLAMA KARTI -->
   <div class="storage-card">
     <div class="storage-info">
       <div class="label">☁️ Depolama Alanı</div>
@@ -254,7 +305,6 @@
     </div>
   </div>
 
-  <!-- HIZLI EYLEMLER -->
   <h2 class="section-title">⚡ Hızlı Eylemler</h2>
   <div class="quick-actions">
     <button class="action-btn" id="btnUpload"><span class="icon">📤</span><span class="text">Dosya Yükle</span></button>
@@ -263,25 +313,55 @@
     <button class="action-btn" id="btnClear"><span class="icon">🗑️</span><span class="text">Tümünü Temizle</span></button>
   </div>
 
-  <!-- DOSYALAR -->
   <h2 class="section-title">🗂️ Dosyaların</h2>
-  <div class="file-grid" id="fileGrid">
-    <!-- Dosyalar JS ile buraya gerçek boyutlarıyla eklenecek -->
-  </div>
+  <div class="file-grid" id="fileGrid"></div>
 </main>
 
-<!-- Gizli Dosya Seçici -->
 <input type="file" id="fileInput" multiple />
+
+<!-- KLASÖR OLUŞTUR MODAL -->
+<div class="modal-overlay" id="folderModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('folderModal')">✕</button>
+    <div class="modal-icon">📁</div>
+    <h3>Yeni Klasör</h3>
+    <p class="modal-sub">Klasörüne bir isim ver</p>
+    <input type="text" class="modal-input" id="folderNameInput" placeholder="Örn: Çalışma Dosyaları" />
+    <button class="btn-modal" id="confirmFolderBtn">Oluştur</button>
+  </div>
+</div>
+
+<!-- YENİDEN ADLANDIR MODAL -->
+<div class="modal-overlay" id="renameModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('renameModal')">✕</button>
+    <div class="modal-icon">✏️</div>
+    <h3>Yeniden Adlandır</h3>
+    <p class="modal-sub">Yeni isim girin</p>
+    <input type="text" class="modal-input" id="renameInput" placeholder="Yeni ad" />
+    <button class="btn-modal" id="confirmRenameBtn">Kaydet</button>
+  </div>
+</div>
+
+<!-- ÖNİZLEME MODAL -->
+<div class="modal-overlay" id="previewModal">
+  <div class="modal-box" style="max-width: 600px;">
+    <button class="modal-close" onclick="closeModal('previewModal')">✕</button>
+    <img id="previewImage" src="" alt="Önizleme" />
+    <h3 id="previewName" style="font-size: 16px; margin-top: 8px;"></h3>
+    <button class="btn-modal" id="downloadFromPreview" style="margin-top: 12px;">📥 İndir</button>
+  </div>
+</div>
 
 <div class="toast" id="toast">✅ İşlem başarılı!</div>
 
 <script>
   // ==========================================================
-  // 1. GERÇEK VERİTABANI (IndexedDB) YÖNETİMİ
+  // 1. VERİTABANI (IndexedDB)
   // ==========================================================
   const DB_NAME = 'NovaDepoDB';
   const STORE_NAME = 'files';
-  const MAX_STORAGE = 10 * 1024 * 1024 * 1024; // 10 GB Görsel Limit
+  const MAX_STORAGE = 10 * 1024 * 1024 * 1024;
 
   function initDB() {
     return new Promise((resolve, reject) => {
@@ -350,7 +430,7 @@
   }
 
   // ==========================================================
-  // 2. ARAYÜZ VE İŞLEVLER
+  // 2. ARAYÜZ VE YARDIMCI FONKSİYONLAR
   // ==========================================================
   function formatBytes(bytes, decimals = 2) {
     if (bytes === 0) return '0 B';
@@ -371,23 +451,24 @@
     return '📄';
   }
 
+  function showModal(id) { document.getElementById(id).classList.add('active'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
   let currentSortAsc = true;
   let currentFilter = '';
+  let currentRenameId = null;
+  let currentPreviewUrl = null;
 
   async function refreshAll() {
     const allFiles = await dbGetAll();
-    
-    // Filtreleme
     let filtered = allFiles.filter(f => f.name.toLowerCase().includes(currentFilter.toLowerCase()));
     
-    // Sıralama (Klasörler her zaman üstte)
     filtered.sort((a, b) => {
       if (a.isFolder && !b.isFolder) return -1;
       if (!a.isFolder && b.isFolder) return 1;
       return currentSortAsc ? a.name.localeCompare(b.name, 'tr') : b.name.localeCompare(a.name, 'tr');
     });
 
-    // Depolama Hesaplama
     const totalUsed = allFiles.reduce((acc, f) => acc + (f.size || 0), 0);
     const percent = Math.min((totalUsed / MAX_STORAGE) * 100, 100);
     
@@ -396,12 +477,19 @@
     document.getElementById('storagePercent').textContent = `%${Math.round(percent)}`;
     document.getElementById('storageRing').style.background = `conic-gradient(var(--primary) 0% ${percent}%, rgba(255,255,255,0.1) ${percent}% 100%)`;
 
-    // Izgara Render
+    // Arama temizle butonu
+    document.getElementById('clearSearch').style.display = currentFilter ? 'block' : 'none';
+
     const grid = document.getElementById('fileGrid');
     grid.innerHTML = '';
     
     if (filtered.length === 0) {
-      grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--muted); padding: 40px;">Hiçbir öğe bulunamadı.</div>`;
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">🌌</div>
+          <p>Burada hiçbir şey yok. Evreni doldurmaya başla!</p>
+          <button class="btn" onclick="document.getElementById('fileInput').click()">📤 İlk Dosyanı Yükle</button>
+        </div>`;
       return;
     }
 
@@ -409,7 +497,10 @@
       const card = document.createElement('div');
       card.className = 'file-card';
       card.innerHTML = `
-        <button class="delete-btn" data-id="${file.id}" title="Kalıcı Olarak Sil">🗑️</button>
+        <div class="action-btns">
+          <button class="icon-btn rename" data-id="${file.id}" title="Yeniden Adlandır">✏️</button>
+          <button class="icon-btn delete" data-id="${file.id}" title="Kalıcı Olarak Sil">🗑️</button>
+        </div>
         ${file.isFolder ? '<span class="badge">Klasör</span>' : ''}
         <span class="file-icon">${getFileIcon(file.type, file.name, file.isFolder)}</span>
         <div class="file-name">${file.name}</div>
@@ -417,10 +508,10 @@
       `;
       
       card.addEventListener('click', async (e) => {
-        if (e.target.closest('.delete-btn')) return;
+        if (e.target.closest('.action-btns')) return;
         
         if (file.isFolder) {
-          showToast(`📁 "${file.name}" klasörü. (Gerçek dosya yükleyerek indirme testini yapabilirsiniz)`);
+          showToast(`📁 "${file.name}" klasörü seçildi.`);
           return;
         }
 
@@ -429,8 +520,26 @@
           return;
         }
 
-        showToast('⏳ Dosya hazırlanıyor, indiriliyor...');
-        try {
+        // Resim ise önizle, değilse indir
+        if (file.type.includes('image') || file.name.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+          currentPreviewUrl = URL.createObjectURL(file.blob);
+          document.getElementById('previewImage').src = currentPreviewUrl;
+          document.getElementById('previewName').textContent = file.name;
+          
+          // İndir butonunu ayarla
+          const dlBtn = document.getElementById('downloadFromPreview');
+          dlBtn.onclick = () => {
+            const a = document.createElement('a');
+            a.href = currentPreviewUrl;
+            a.download = file.name;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          };
+          
+          showModal('previewModal');
+        } else {
+          showToast('⏳ Dosya indiriliyor...');
           const url = URL.createObjectURL(file.blob);
           const a = document.createElement('a');
           a.href = url;
@@ -440,27 +549,35 @@
           document.body.removeChild(a);
           setTimeout(() => URL.revokeObjectURL(url), 1000);
           showToast('✅ İndirme başladı!');
-        } catch (err) {
-          showToast('⚠️ İndirme sırasında hata oluştu!', true);
         }
       });
 
       grid.appendChild(card);
     });
 
-    // Silme butonları
-    document.querySelectorAll('.delete-btn').forEach(btn => {
+    // Aksiyon Butonları
+    document.querySelectorAll('.icon-btn.delete').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         e.stopPropagation();
-        const id = btn.dataset.id;
         if (confirm('Bu öğeyi kalıcı olarak silmek istediğinize emin misiniz?')) {
           try {
-            await dbDelete(id);
-            showToast('🗑️ Öğe kalıcı olarak silindi ve alan geri kazanıldı.');
+            await dbDelete(btn.dataset.id);
+            showToast('🗑️ Öğe silindi ve alan geri kazanıldı.');
             refreshAll();
-          } catch (err) {
-            showToast('⚠️ Silme işlemi başarısız!', true);
-          }
+          } catch (err) { showToast('⚠️ Silme başarısız!', true); }
+        }
+      });
+    });
+
+    document.querySelectorAll('.icon-btn.rename').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        currentRenameId = btn.dataset.id;
+        const file = allFiles.find(f => f.id === currentRenameId);
+        if (file) {
+          document.getElementById('renameInput').value = file.name;
+          showModal('renameModal');
+          setTimeout(() => document.getElementById('renameInput').focus(), 100);
         }
       });
     });
@@ -469,8 +586,6 @@
   // ==========================================================
   // 3. ETKİLEŞİM OLAYLARI
   // ==========================================================
-  
-  // Dosya Yükleme
   const fileInput = document.getElementById('fileInput');
   document.getElementById('btnUpload').addEventListener('click', () => fileInput.click());
   
@@ -488,18 +603,14 @@
           size: file.size,
           date: new Date().toLocaleDateString('tr-TR'),
           isFolder: false,
-          blob: file // GERÇEK DOSYA NESNESİ
+          blob: file
         });
       }
-      showToast(`✅ ${newFiles.length} dosya başarıyla depolandı!`);
+      showToast(`✅ ${newFiles.length} dosya depolandı!`);
       fileInput.value = '';
       await refreshAll();
     } catch (err) {
-      if (err.name === 'QuotaExceededError') {
-        showToast('⚠️ Tarayıcı depolama kotası doldu! Bazı dosyaları silin.', true);
-      } else {
-        showToast('⚠️ Yükleme hatası: ' + err.message, true);
-      }
+      showToast(err.name === 'QuotaExceededError' ? '⚠️ Depolama kotası doldu!' : '⚠️ Yükleme hatası!', true);
     } finally {
       document.getElementById('loadingOverlay').classList.remove('active');
     }
@@ -529,34 +640,58 @@
             blob: file
           });
         }
-        showToast(`✅ ${newFiles.length} dosya başarıyla depolandı!`);
+        showToast(`✅ ${newFiles.length} dosya depolandı!`);
         await refreshAll();
-      } catch (err) {
-        showToast('⚠️ Yükleme hatası!', true);
-      } finally {
-        document.getElementById('loadingOverlay').classList.remove('active');
-      }
+      } catch (err) { showToast('⚠️ Yükleme hatası!', true); } 
+      finally { document.getElementById('loadingOverlay').classList.remove('active'); }
     }
   });
 
-  // Yeni Klasör
-  document.getElementById('btnFolder').addEventListener('click', async () => {
-    const name = prompt('Yeni klasör adı:');
-    if (name && name.trim() !== '') {
-      const allFiles = await dbGetAll();
-      if (allFiles.some(f => f.name.toLowerCase() === name.trim().toLowerCase())) {
-        showToast('⚠️ Bu isimde bir klasör zaten var!', true);
-        return;
-      }
-      await dbAdd({
-        id: Date.now().toString(),
-        name: name.trim(),
-        type: 'folder',
-        size: 0,
-        date: new Date().toLocaleDateString('tr-TR'),
-        isFolder: true
-      });
-      showToast('📁 Yeni klasör oluşturuldu!');
+  // Klasör Oluştur
+  document.getElementById('btnFolder').addEventListener('click', () => {
+    document.getElementById('folderNameInput').value = '';
+    showModal('folderModal');
+    setTimeout(() => document.getElementById('folderNameInput').focus(), 100);
+  });
+
+  document.getElementById('confirmFolderBtn').addEventListener('click', async () => {
+    const name = document.getElementById('folderNameInput').value.trim();
+    if (!name) { showToast('⚠️ Lütfen bir isim girin', true); return; }
+    
+    const allFiles = await dbGetAll();
+    if (allFiles.some(f => f.name.toLowerCase() === name.toLowerCase())) {
+      showToast('⚠️ Bu isimde bir öğe zaten var!', true); return;
+    }
+
+    await dbAdd({
+      id: Date.now().toString(),
+      name: name,
+      type: 'folder',
+      size: 0,
+      date: new Date().toLocaleDateString('tr-TR'),
+      isFolder: true
+    });
+    closeModal('folderModal');
+    showToast('📁 Klasör oluşturuldu!');
+    refreshAll();
+  });
+
+  // Yeniden Adlandır
+  document.getElementById('confirmRenameBtn').addEventListener('click', async () => {
+    const newName = document.getElementById('renameInput').value.trim();
+    if (!newName) { showToast('⚠️ İsim boş olamaz', true); return; }
+
+    const allFiles = await dbGetAll();
+    if (allFiles.some(f => f.id !== currentRenameId && f.name.toLowerCase() === newName.toLowerCase())) {
+      showToast('⚠️ Bu isimde bir öğe zaten var!', true); return;
+    }
+
+    const file = allFiles.find(f => f.id === currentRenameId);
+    if (file) {
+      file.name = newName;
+      await dbAdd(file);
+      closeModal('renameModal');
+      showToast('✏️ İsim başarıyla değiştirildi!');
       refreshAll();
     }
   });
@@ -573,18 +708,35 @@
     if (confirm('DİKKAT: Tüm dosya ve klasörler kalıcı olarak silinecek. Onaylıyor musunuz?')) {
       try {
         await dbClear();
-        showToast('🗑️ Tüm depolama alanı temizlendi.');
+        showToast('🗑️ Depolama alanı tamamen temizlendi.');
         refreshAll();
-      } catch (err) {
-        showToast('⚠️ Temizleme başarısız!', true);
-      }
+      } catch (err) { showToast('⚠️ Temizleme başarısız!', true); }
     }
   });
 
   // Arama
-  document.getElementById('searchInput').addEventListener('input', (e) => {
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', (e) => {
     currentFilter = e.target.value;
     refreshAll();
+  });
+  document.getElementById('clearSearch').addEventListener('click', () => {
+    searchInput.value = '';
+    currentFilter = '';
+    refreshAll();
+  });
+
+  // Modal dışına tıklayınca kapatma
+  document.querySelectorAll('.modal-overlay').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+        if (modal.id === 'previewModal' && currentPreviewUrl) {
+          URL.revokeObjectURL(currentPreviewUrl);
+          currentPreviewUrl = null;
+        }
+      }
+    });
   });
 
   // ==========================================================
@@ -605,7 +757,7 @@
 
   document.getElementById('logoutBtn').addEventListener('click', () => {
     localStorage.removeItem('novaUser');
-    showToast('👋 Çıkış yapıldı. Görüşürüz!');
+    showToast('👋 Çıkış yapıldı.');
     setTimeout(() => { window.location.replace('../'); }, 800);
   });
 
@@ -625,7 +777,7 @@
 
 
   // ==========================================================
-  // 5. AŞIRI GERÇEKÇİ GALAKSİ ANİMASYONU (CANVAS)
+  // 5. GALAKSİ ANİMASYONU
   // ==========================================================
   const canvas = document.getElementById('galaxy-canvas');
   const ctx = canvas.getContext('2d');
@@ -704,10 +856,7 @@
   for (let i = 0; i < ARMS * PARTICLES_PER_ARM; i++) particles.push(new Star(false));
 
   let mouseX = cx, mouseY = cy;
-  window.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-  });
+  window.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
 
   let time = 0;
   function animate() {
@@ -733,10 +882,7 @@
     ctx.save();
     ctx.translate(offsetX, offsetY);
 
-    particles.forEach(p => {
-      p.update();
-      p.draw();
-    });
+    particles.forEach(p => { p.update(); p.draw(); });
 
     ctx.restore();
     ctx.globalCompositeOperation = 'source-over';
