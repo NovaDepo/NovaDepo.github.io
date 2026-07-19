@@ -97,7 +97,7 @@
   }
   .welcome p { font-size: 14px; opacity: 0.8; }
 
-  /* YENİ: GERÇEK DEPOLAMA PANELİ */
+  /* DEPOLAMA PANELİ */
   .storage-card {
     background: var(--card-bg); border-radius: 18px; padding: 24px; margin-bottom: 24px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.4); border: 1px solid var(--card-border);
@@ -283,16 +283,16 @@
     <p>Dosyalarını buraya sürükleyip bırakabilir veya aşağıdaki butonları kullanabilirsin.</p>
   </div>
 
-  <!-- GERÇEK DEPOLAMA PANELİ -->
+  <!-- TARAYICI DEPOLAMA PANELİ -->
   <div class="storage-card">
     <div class="storage-header">
-      <div class="storage-title">💾 Yerel Depolama Durumu</div>
+      <div class="storage-title">💾 Tarayıcı Depolama Kotası</div>
       <div class="storage-badge" id="storageStatusBadge">Sağlıklı</div>
     </div>
     
     <div class="storage-stats">
       <div class="stat-box">
-        <div class="label">Toplam Kota</div>
+        <div class="label">Maksimum İzin Verilen Alan</div>
         <div class="value" id="statQuota">Hesaplanıyor...</div>
       </div>
       <div class="stat-box">
@@ -300,7 +300,7 @@
         <div class="value highlight" id="statUsed">0 B</div>
       </div>
       <div class="stat-box">
-        <div class="label">Kalan Boş Alan</div>
+        <div class="label">Sistemdeki Tahmini Boş Alan</div>
         <div class="value" id="statAvailable">Hesaplanıyor...</div>
       </div>
     </div>
