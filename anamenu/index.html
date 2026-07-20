@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>NovaPlatform • Depo & Oyun</title>
+<title>NovaDepo • Depo & Oyun</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -226,19 +226,6 @@
   .game-title { font-size: 15px; font-weight: 700; color: white; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .game-meta { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); }
   .game-rating { color: var(--warning); font-weight: 600; }
-  .play-overlay {
-    position: absolute; inset: 0; background: rgba(139, 92, 246, 0.85);
-    display: flex; align-items: center; justify-content: center;
-    opacity: 0; transition: opacity 0.3s; backdrop-filter: blur(4px);
-  }
-  .game-card:hover .play-overlay { opacity: 1; }
-  .play-btn {
-    padding: 10px 24px; background: white; color: var(--primary-dark);
-    border: none; border-radius: 30px; font-weight: 800; font-size: 14px;
-    cursor: pointer; transform: scale(0.8); transition: transform 0.3s;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  }
-  .game-card:hover .play-btn { transform: scale(1); }
 
   .empty-state {
     grid-column: 1/-1; text-align: center; color: var(--muted); padding: 60px 20px;
@@ -365,7 +352,7 @@
 <nav class="navbar">
   <div class="nav-brand" onclick="switchTab('depo')">
     <span class="logo">🌌</span>
-    <span class="name">NOVA<span>PLATFORM</span></span>
+    <span class="name">NOVA<span>DEPO</span></span>
   </div>
   
   <div class="nav-tabs">
@@ -435,8 +422,12 @@
           <div class="value" id="statGenre">Yok</div>
         </div>
         <div class="stat-box">
-          <div class="label">Çevrimiçi Oyuncu</div>
-          <div class="value" style="color: var(--success);" id="statOnline">0</div>
+          <div class="label">İl</div>
+          <div class="value" style="color: var(--success);" id="statCity">İstanbul</div>
+        </div>
+        <div class="stat-box">
+          <div class="label">Oyun Sayısı</div>
+          <div class="value accent" id="statGameCount">0</div>
         </div>
       </div>
       <div class="level-track">
@@ -545,7 +536,9 @@
     const mins = profileStats.totalMinutesPlayed % 60;
     document.getElementById('statHours').textContent = mins > 0 ? `${hours} Saat ${mins} Dk` : `${hours} Saat`;
     document.getElementById('statGenre').textContent = maxGenre;
-    document.getElementById('statOnline').textContent = Math.floor(Math.random() * 2000 + 800).toLocaleString();
+    
+    document.getElementById('statCity').textContent = "İstanbul";
+    document.getElementById('statGameCount').textContent = gamesDB.length;
     
     const nextLevelXp = profileStats.level * 350;
     const currentLevelXpBase = (profileStats.level - 1) * 350;
@@ -922,8 +915,7 @@
     { id: 3, title: "Sans Fight", genre: "RPG", rating: "5.0", players: "200K", icon: "💀", color: "linear-gradient(135deg, #fbbf24, #d97706)", type: "external", url: "https://neonixia.github.io/sans/" },
     { id: 4, title: "Half-Life 2", genre: "FPS", rating: "4.9", players: "85K", icon: "🧲", color: "linear-gradient(135deg, #f59e0b, #b45309)", type: "external", url: "https://hl2.slqnt.dev" },
     { id: 5, title: "Slow Roads", genre: "Simülasyon", rating: "4.6", players: "30K", icon: "🚗", color: "linear-gradient(135deg, #06b6d4, #0891b2)", type: "external", url: "https://slowroads.io" },
-    { id: 6, title: "GeoFS", genre: "Simülasyon", rating: "4.5", players: "45K", icon: "✈️", color: "linear-gradient(135deg, #3b82f6, #1d4ed8)", type: "external", url: "https://geo-fs.com" },
-    { id: 7, title: "Aim Antrenmanı", genre: "FPS", rating: "4.8", players: "15K", icon: "🎯", color: "linear-gradient(135deg, #8b5cf6, #6d28d9)", type: "internal", gameId: "aim" }
+    { id: 6, title: "Aim Antrenmanı", genre: "FPS", rating: "4.8", players: "15K", icon: "🎯", color: "linear-gradient(135deg, #8b5cf6, #6d28d9)", type: "internal", gameId: "aim" }
   ];
 
   let currentSortGame = 'all';
@@ -955,9 +947,6 @@
       card.innerHTML = `
         <div class="game-cover" style="background: ${game.color};">
           <span style="z-index: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">${game.icon}</span>
-          <div class="play-overlay">
-            <button class="play-btn" onclick="window.launchGame(${game.id}, event)">▶ OYNA</button>
-          </div>
         </div>
         <div class="game-info">
           <span class="game-badge">${game.genre}</span>
@@ -966,9 +955,10 @@
             <span class="game-rating">★ ${game.rating}</span>
             <span>👥 ${game.players}</span>
           </div>
-          <div style="margin-top: 10px; display: flex; gap: 8px;">
-            <button class="action-btn" style="flex:1; padding: 8px; font-size: 12px;" onclick="window.toggleFav(${game.id}, event)">
-              ${isFav ? '⭐ Favoride' : '☆ Favorile'}
+          <div style="margin-top: 12px; display: flex; gap: 8px;">
+            <button class="action-btn" style="flex: 1; padding: 8px; font-size: 13px; background: var(--primary); border-color: var(--primary);" onclick="window.launchGame(${game.id}, event)">▶ Oyna</button>
+            <button class="action-btn" style="flex: 0 0 40px; padding: 8px; font-size: 14px;" onclick="window.toggleFav(${game.id}, event)">
+              ${isFav ? '⭐' : '☆'}
             </button>
           </div>
         </div>
