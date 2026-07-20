@@ -499,7 +499,7 @@
         <span id="modalGameIcon">🎮</span>
         <span id="modalGameTitle">Oyun Adı</span>
       </div>
-      <button class="modal-close" onclick="closeGameModal()">✕</button>
+      <button class="modal-close" onclick="window.closeGameModal()">✕</button>
     </div>
     <div class="game-frame-container" id="gameFrameContainer"></div>
   </div>
@@ -963,10 +963,14 @@
     if (game.type === 'external' && game.url) {
       container.innerHTML = `
         <iframe src="${game.url}" 
-          allow="fullscreen; pointer-lock; microphone; camera; autoplay" 
+          allow="fullscreen; pointer-lock; microphone; camera; autoplay; gamepad" 
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock allow-top-navigation"
           style="width: 100%; height: 100%; border: none; background: #000;">
-        </iframe>`;
+        </iframe>
+        <div style="position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.7); color:white; padding:5px 10px; border-radius:5px; font-size:11px; pointer-events:none; opacity:0.8;">
+          Not: Bazı harici oyunlar güvenlik nedeniyle tarayıcıda kısıtlanabilir.
+        </div>
+      `;
     } else {
       startInternalGame(container);
     }
@@ -997,8 +1001,9 @@
       document.getElementById('gameHud').style.display = 'flex';
       
       const canvas = document.getElementById('internalGameCanvas');
-      canvas.width = container.clientWidth;
-      canvas.height = container.clientHeight;
+      // Boyutları garantiye al
+      canvas.width = container.clientWidth || 800;
+      canvas.height = container.clientHeight || 600;
       const ctx = canvas.getContext('2d');
 
       let lastTime = 0;
@@ -1010,7 +1015,7 @@
           x: radius + Math.random() * (canvas.width - radius * 2),
           y: radius + Math.random() * (canvas.height - radius * 2),
           radius: radius,
-          life: 1.0
+          life: 1.5 // Ömür biraz artırıldı
         });
       }
 
@@ -1034,12 +1039,14 @@
       function gameLoop(timestamp) {
         if (!internalGameLoop) return;
         
+        // KRİTİK DÜZELTME: İlk karede zaman farkını sıfırla, aksi halde oyun anında biter
+        if (lastTime === 0) lastTime = timestamp;
         const deltaTime = (timestamp - lastTime) / 1000;
         lastTime = timestamp;
 
         if (gameTimeLeft > 0) {
           gameTimeLeft -= deltaTime;
-          document.getElementById('hudTime').textContent = Math.ceil(gameTimeLeft);
+          document.getElementById('hudTime').textContent = Math.max(0, Math.ceil(gameTimeLeft));
           
           spawnTimer += deltaTime;
           if (spawnTimer > 0.8) {
@@ -1170,8 +1177,9 @@
     let user = null;
     try { user = JSON.parse(localStorage.getItem('novaUser')); } catch (e) { user = null; }
     if (!user) {
-      user = { name: 'Misafir' };
-      localStorage.setItem('novaUser', JSON.stringify(user));
+      // Kullanıcı yoksa ana sayfaya (giriş ekranına) yönlendir
+      window.location.replace('../');
+      return;
     }
     const name = user.name || 'Kaptan';
     document.getElementById('avatar').textContent = name.charAt(0).toUpperCase();
@@ -1185,8 +1193,10 @@
 
   document.getElementById('logoutBtn').addEventListener('click', () => {
     localStorage.removeItem('novaUser');
-    showToast('👋 Çıkış yapıldı.');
-    setTimeout(() => { location.reload(); }, 800);
+    showToast('👋 Çıkış yapıldı. Ana sayfaya yönlendiriliyorsunuz...');
+    setTimeout(() => { 
+      window.location.replace('../'); 
+    }, 800);
   });
 
   (async () => {
