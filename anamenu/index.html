@@ -345,7 +345,6 @@
   .game-placeholder { text-align: center; color: var(--muted); padding: 20px; }
   .game-placeholder .icon { font-size: 64px; margin-bottom: 16px; display: block; }
   
-  /* Dahili Oyun Canvas Stili */
   #internalGameCanvas {
     background: #0a0a1a;
     cursor: crosshair;
@@ -395,7 +394,6 @@
     <p id="welcomeText">Dosyalarını buraya sürükleyip bırakabilir veya aşağıdaki butonları kullanabilirsin.</p>
   </div>
 
-  <!-- ================= DEPO SEKME İÇERİĞİ ================= -->
   <div id="tab-depo" class="tab-content active">
     <div class="storage-card">
       <div class="storage-info">
@@ -422,7 +420,6 @@
     <div class="file-grid" id="fileGrid"></div>
   </div>
 
-  <!-- ================= OYUN SEKME İÇERİĞİ ================= -->
   <div id="tab-oyun" class="tab-content">
     <div class="stats-card">
       <div class="stats-header">
@@ -463,8 +460,7 @@
 
 <input type="file" id="fileInput" multiple />
 
-<!-- ===== MODALLAR ===== -->
-<!-- Klasör Oluştur -->
+<!-- MODALLAR -->
 <div class="modal-overlay" id="folderModal">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal('folderModal')">✕</button>
@@ -476,7 +472,6 @@
   </div>
 </div>
 
-<!-- Yeniden Adlandır -->
 <div class="modal-overlay" id="renameModal">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal('renameModal')">✕</button>
@@ -488,7 +483,6 @@
   </div>
 </div>
 
-<!-- Önizleme -->
 <div class="modal-overlay" id="previewModal">
   <div class="modal-box" style="max-width: 600px;">
     <button class="modal-close" onclick="closeModal('previewModal')">✕</button>
@@ -498,7 +492,6 @@
   </div>
 </div>
 
-<!-- Oyun Oynatma -->
 <div class="modal-overlay" id="gameModal">
   <div class="game-modal-box">
     <div class="game-modal-header">
@@ -508,9 +501,7 @@
       </div>
       <button class="modal-close" onclick="closeGameModal()">✕</button>
     </div>
-    <div class="game-frame-container" id="gameFrameContainer">
-      <!-- Buraya iframe veya canvas dinamik olarak gelecek -->
-    </div>
+    <div class="game-frame-container" id="gameFrameContainer"></div>
   </div>
 </div>
 
@@ -528,7 +519,6 @@
   let currentPreviewUrl = null;
   let favorites = JSON.parse(localStorage.getItem('novaFavorites')) || [];
 
-  // Dahili oyun değişkenleri
   let internalGameLoop = null;
   let gameScore = 0;
   let gameTimeLeft = 30;
@@ -770,7 +760,6 @@
     });
   }
 
-  // Depo Etkileşimleri
   const fileInput = document.getElementById('fileInput');
   document.getElementById('btnUpload').addEventListener('click', () => fileInput.click());
   
@@ -878,7 +867,7 @@
   });
 
   // ==========================================================
-  // 3. OYUN MODÜLÜ
+  // 3. OYUN MODÜLÜ (GLOBAL FONKSİYONLARLA)
   // ==========================================================
   const gamesDB = [
     { id: 1, title: "G3Craft", genre: "Sandbox", rating: "4.9", players: "50K", icon: "⛏️", color: "linear-gradient(135deg, #10b981, #047857)", type: "external", url: "https://gizlioyuncu3.github.io/G3Craft" },
@@ -918,7 +907,7 @@
         <div class="game-cover" style="background: ${game.color};">
           <span style="z-index: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">${game.icon}</span>
           <div class="play-overlay">
-            <button class="play-btn" onclick="launchGame(${game.id})">▶ OYNA</button>
+            <button class="play-btn" onclick="window.launchGame(${game.id}, event)">▶ OYNA</button>
           </div>
         </div>
         <div class="game-info">
@@ -929,7 +918,7 @@
             <span>👥 ${game.players}</span>
           </div>
           <div style="margin-top: 10px; display: flex; gap: 8px;">
-            <button class="action-btn" style="flex:1; padding: 8px; font-size: 12px;" onclick="toggleFav(${game.id}, event)">
+            <button class="action-btn" style="flex:1; padding: 8px; font-size: 12px;" onclick="window.toggleFav(${game.id}, event)">
               ${isFav ? '⭐ Favoride' : '☆ Favorile'}
             </button>
           </div>
@@ -939,8 +928,8 @@
     });
   }
 
-  function toggleFav(id, event) {
-    event.stopPropagation();
+  window.toggleFav = function(id, event) {
+    if (event) event.stopPropagation();
     if (favorites.includes(id)) {
       favorites = favorites.filter(favId => favId !== id);
       showToast('⭐ Favorilerden çıkarıldı.');
@@ -950,33 +939,41 @@
     }
     localStorage.setItem('novaFavorites', JSON.stringify(favorites));
     renderGames();
-  }
+  };
 
-  function launchGame(id) {
+  window.launchGame = function(id, event) {
+    if (event) event.stopPropagation();
     const game = gamesDB.find(g => g.id === id);
-    if (!game) return;
+    if (!game) {
+      showToast('⚠️ Oyun bulunamadı!', true);
+      return;
+    }
     
     document.getElementById('modalGameTitle').textContent = game.title;
     document.getElementById('modalGameIcon').textContent = game.icon;
     const container = document.getElementById('gameFrameContainer');
 
+    // Önceki oyunu tamamen temizle (Bellek sızıntısını önler)
+    if (internalGameLoop) {
+      cancelAnimationFrame(internalGameLoop);
+      internalGameLoop = null;
+    }
+    container.innerHTML = '';
+
     if (game.type === 'external' && game.url) {
-      // Harici oyunları iframe içinde, site dışına çıkmadan oynat
       container.innerHTML = `
         <iframe src="${game.url}" 
-          allow="fullscreen; pointer-lock; microphone; camera" 
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock"
-          style="width: 100%; height: 100%; border: none;">
+          allow="fullscreen; pointer-lock; microphone; camera; autoplay" 
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock allow-top-navigation"
+          style="width: 100%; height: 100%; border: none; background: #000;">
         </iframe>`;
     } else {
-      // Dahili basit oyunları canvas ile oynat
       startInternalGame(container);
     }
     
     showModal('gameModal');
-  }
+  };
 
-  // Basit Dahili Oyun: Hedef Vurma (Refleks)
   function startInternalGame(container) {
     gameScore = 0;
     gameTimeLeft = 30;
@@ -987,7 +984,7 @@
       <div id="gameOverlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.8); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10;">
         <h2 style="color:white; font-size:24px; margin-bottom:10px;">Hedef Vurma</h2>
         <p style="color:var(--muted); margin-bottom:20px;">Çıkan hedeflere mümkün olduğunca hızlı tıkla!</p>
-        <button class="btn-modal" style="width:auto; padding:12px 32px;" onclick="startGameLoop()">Başla</button>
+        <button class="btn-modal" style="width:auto; padding:12px 32px;" onclick="window.startGameLoop()">Başla</button>
       </div>
       <div id="gameHud" style="position:absolute; top:10px; left:10px; right:10px; display:none; justify-content:space-between; color:white; font-weight:bold; font-size:18px; pointer-events:none;">
         <span>Skor: <span id="hudScore">0</span></span>
@@ -1013,7 +1010,7 @@
           x: radius + Math.random() * (canvas.width - radius * 2),
           y: radius + Math.random() * (canvas.height - radius * 2),
           radius: radius,
-          life: 1.0 // 1 saniye sonra kaybolur
+          life: 1.0
         });
       }
 
@@ -1035,7 +1032,7 @@
       });
 
       function gameLoop(timestamp) {
-        if (!internalGameLoop) return; // Döngü durdurulduysa çık
+        if (!internalGameLoop) return;
         
         const deltaTime = (timestamp - lastTime) / 1000;
         lastTime = timestamp;
@@ -1045,17 +1042,16 @@
           document.getElementById('hudTime').textContent = Math.ceil(gameTimeLeft);
           
           spawnTimer += deltaTime;
-          if (spawnTimer > 0.8) { // Her 0.8 saniyede bir hedef
+          if (spawnTimer > 0.8) {
             spawnTarget();
             spawnTimer = 0;
           }
         } else {
-          // Oyun Bitti
           internalGameLoop = null;
           document.getElementById('gameOverlay').innerHTML = `
             <h2 style="color:white; font-size:28px; margin-bottom:10px;">Oyun Bitti!</h2>
             <p style="color:var(--accent); font-size:24px; font-weight:bold; margin-bottom:20px;">Toplam Skor: ${gameScore}</p>
-            <button class="btn-modal" style="width:auto; padding:12px 32px;" onclick="startGameLoop()">Tekrar Oyna</button>
+            <button class="btn-modal" style="width:auto; padding:12px 32px;" onclick="window.startGameLoop()">Tekrar Oyna</button>
           `;
           document.getElementById('gameOverlay').style.display = 'flex';
           document.getElementById('gameHud').style.display = 'none';
@@ -1063,7 +1059,6 @@
           return;
         }
 
-        // Çizim
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
         gameTargets.forEach(t => {
@@ -1077,7 +1072,6 @@
             ctx.lineWidth = 2;
             ctx.stroke();
             
-            // İç halka
             ctx.beginPath();
             ctx.arc(t.x, t.y, t.radius * 0.4, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(236, 72, 153, ${t.life})`;
@@ -1085,9 +1079,7 @@
           }
         });
         
-        // Süresi dolanları temizle
         gameTargets = gameTargets.filter(t => t.life > 0);
-
         internalGameLoop = requestAnimationFrame(gameLoop);
       }
 
@@ -1095,22 +1087,22 @@
     };
   }
 
-  function closeGameModal() {
+  window.closeGameModal = function() {
     closeModal('gameModal');
-    // Bellek ve işlemci temizliği
     if (internalGameLoop) {
       cancelAnimationFrame(internalGameLoop);
       internalGameLoop = null;
     }
     setTimeout(() => {
-      document.getElementById('gameFrameContainer').innerHTML = ''; // iframe veya canvas'ı tamamen yok et
+      const container = document.getElementById('gameFrameContainer');
+      if (container) container.innerHTML = '';
     }, 300);
-  }
+  };
 
   document.getElementById('btnRandom').addEventListener('click', () => {
     const randomGame = gamesDB[Math.floor(Math.random() * gamesDB.length)];
     showToast(`🎲 Rastgele seçilen: ${randomGame.title}`);
-    setTimeout(() => launchGame(randomGame.id), 500);
+    setTimeout(() => window.launchGame(randomGame.id), 500);
   });
 
   document.getElementById('btnTop').addEventListener('click', () => {
@@ -1162,7 +1154,7 @@
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
         if (modal.id === 'gameModal') {
-          closeGameModal();
+          window.closeGameModal();
         } else {
           modal.classList.remove('active');
           if (modal.id === 'previewModal' && currentPreviewUrl) {
@@ -1197,7 +1189,6 @@
     setTimeout(() => { location.reload(); }, 800);
   });
 
-  // Başlangıç
   (async () => {
     await seedDefaults();
     switchTab('depo');
