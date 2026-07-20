@@ -252,7 +252,7 @@
   .empty-state .btn:hover { background: var(--primary-dark); }
 
   @media (max-width: 640px) {
-    .nav-tabs, .nav-search { display: none; } /* Mobilde basitleştirme */
+    .nav-tabs, .nav-search { display: none; }
     .navbar { padding: 12px 16px; }
     .user-chip .user-name { display: none; }
     .welcome h1 { font-size: 22px; }
@@ -329,21 +329,29 @@
 
   .game-modal-box {
     background: #0f0c29; border: 1px solid var(--card-border);
-    border-radius: 20px; width: 100%; max-width: 800px; height: 80vh;
+    border-radius: 20px; width: 100%; max-width: 900px; height: 85vh;
     display: flex; flex-direction: column; overflow: hidden;
     box-shadow: 0 25px 60px rgba(0,0,0,0.8); animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .game-modal-header {
     padding: 16px 24px; border-bottom: 1px solid var(--card-border);
-    display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3);
+    display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4);
   }
   .game-modal-title { font-size: 18px; font-weight: 700; color: white; display: flex; align-items: center; gap: 10px; }
   .game-frame-container {
-    flex: 1; background: #000; position: relative; display: flex; align-items: center; justify-content: center;
+    flex: 1; background: #000; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden;
   }
   .game-frame-container iframe { width: 100%; height: 100%; border: none; }
-  .game-placeholder { text-align: center; color: var(--muted); }
+  .game-placeholder { text-align: center; color: var(--muted); padding: 20px; }
   .game-placeholder .icon { font-size: 64px; margin-bottom: 16px; display: block; }
+  
+  /* Dahili Oyun Canvas Stili */
+  #internalGameCanvas {
+    background: #0a0a1a;
+    cursor: crosshair;
+    max-width: 100%;
+    max-height: 100%;
+  }
 </style>
 </head>
 <body>
@@ -501,10 +509,7 @@
       <button class="modal-close" onclick="closeGameModal()">✕</button>
     </div>
     <div class="game-frame-container" id="gameFrameContainer">
-      <div class="game-placeholder">
-        <span class="icon">🚀</span>
-        <p>Oyun başlatılıyor...</p>
-      </div>
+      <!-- Buraya iframe veya canvas dinamik olarak gelecek -->
     </div>
   </div>
 </div>
@@ -522,6 +527,12 @@
   let currentRenameId = null;
   let currentPreviewUrl = null;
   let favorites = JSON.parse(localStorage.getItem('novaFavorites')) || [];
+
+  // Dahili oyun değişkenleri
+  let internalGameLoop = null;
+  let gameScore = 0;
+  let gameTimeLeft = 30;
+  let gameTargets = [];
 
   function switchTab(tab) {
     currentTab = tab;
@@ -867,17 +878,14 @@
   });
 
   // ==========================================================
-  // 3. OYUN MODÜLÜ (Mock Data)
+  // 3. OYUN MODÜLÜ
   // ==========================================================
   const gamesDB = [
-    { id: 1, title: "Cyber Racer 2077", genre: "Yarış", rating: "4.8", players: "12.5K", icon: "🏎️", color: "linear-gradient(135deg, #ef4444, #b91c1c)", url: "https://html5.gamedistribution.com/rvvASMiM/5e0e4c8c5c0e4b0a8e0e4c8c5c0e4b0a/" },
-    { id: 2, title: "Galaxy Defender", genre: "Aksiyon", rating: "4.5", players: "8.2K", icon: "🚀", color: "linear-gradient(135deg, #8b5cf6, #6d28d9)", url: "" },
-    { id: 3, title: "Puzzle Mind", genre: "Bulmaca", rating: "4.9", players: "25K", icon: "🧩", color: "linear-gradient(135deg, #06b6d4, #0891b2)", url: "" },
-    { id: 4, title: "Zombie Survival", genre: "Korku", rating: "4.2", players: "5.1K", icon: "🧟", color: "linear-gradient(135deg, #10b981, #047857)", url: "" },
-    { id: 5, title: "Chess Master", genre: "Strateji", rating: "4.7", players: "15K", icon: "♟️", color: "linear-gradient(135deg, #f59e0b, #d97706)", url: "" },
-    { id: 6, title: "Space Miner", genre: "Simülasyon", rating: "4.4", players: "3.8K", icon: "⛏️", color: "linear-gradient(135deg, #ec4899, #be185d)", url: "" },
-    { id: 7, title: "Ninja Jump", genre: "Aksiyon", rating: "4.6", players: "9.3K", icon: "🥷", color: "linear-gradient(135deg, #6366f1, #4338ca)", url: "" },
-    { id: 8, title: "Farm Tycoon", genre: "Simülasyon", rating: "4.3", players: "7.7K", icon: "🚜", color: "linear-gradient(135deg, #84cc16, #65a30d)", url: "" }
+    { id: 1, title: "G3Craft", genre: "Sandbox", rating: "4.9", players: "50K", icon: "⛏️", color: "linear-gradient(135deg, #10b981, #047857)", type: "external", url: "https://gizlioyuncu3.github.io/G3Craft" },
+    { id: 2, title: "ValoStrike", genre: "FPS", rating: "4.7", players: "120K", icon: "🔫", color: "linear-gradient(135deg, #ef4444, #b91c1c)", type: "external", url: "https://gizlioyuncu3.github.io/ValoStrike" },
+    { id: 3, title: "Hedef Vurma", genre: "Refleks", rating: "4.5", players: "5K", icon: "🎯", color: "linear-gradient(135deg, #8b5cf6, #6d28d9)", type: "internal", gameId: "target" },
+    { id: 4, title: "Uzay Savunma", genre: "Aksiyon", rating: "4.2", players: "8K", icon: "🚀", color: "linear-gradient(135deg, #06b6d4, #0891b2)", type: "internal", gameId: "target" },
+    { id: 5, title: "Zombi Koşusu", genre: "Korku", rating: "4.6", players: "15K", icon: "🧟", color: "linear-gradient(135deg, #f59e0b, #d97706)", type: "internal", gameId: "target" }
   ];
 
   let currentSortGame = 'all';
@@ -890,8 +898,8 @@
       const matchesSearch = game.title.toLowerCase().includes(currentFilterGame.toLowerCase()) || 
                             game.genre.toLowerCase().includes(currentFilterGame.toLowerCase());
       if (currentSortGame === 'fav') return matchesSearch && favorites.includes(game.id);
-      if (currentSortGame === 'top') return matchesSearch && parseFloat(game.players) > 10;
-      if (currentSortGame === 'action') return matchesSearch && game.genre === 'Aksiyon';
+      if (currentSortGame === 'top') return matchesSearch && parseFloat(game.players) >= 10;
+      if (currentSortGame === 'action') return matchesSearch && (game.genre === 'Aksiyon' || game.genre === 'FPS');
       return matchesSearch;
     });
 
@@ -947,27 +955,155 @@
   function launchGame(id) {
     const game = gamesDB.find(g => g.id === id);
     if (!game) return;
+    
     document.getElementById('modalGameTitle').textContent = game.title;
     document.getElementById('modalGameIcon').textContent = game.icon;
     const container = document.getElementById('gameFrameContainer');
-    if (game.url) {
-      container.innerHTML = `<iframe src="${game.url}" allowfullscreen></iframe>`;
-    } else {
+
+    if (game.type === 'external' && game.url) {
+      // Harici oyunları iframe içinde, site dışına çıkmadan oynat
       container.innerHTML = `
-        <div class="game-placeholder">
-          <span class="icon">${game.icon}</span>
-          <h3 style="color: white; margin-bottom: 8px;">${game.title}</h3>
-          <p>Bu oyun şu anda demo modunda.</p>
-          <button class="btn-modal" style="margin-top: 20px; width: auto; padding: 10px 24px;" onclick="closeGameModal()">Kapat</button>
-        </div>`;
+        <iframe src="${game.url}" 
+          allow="fullscreen; pointer-lock; microphone; camera" 
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock"
+          style="width: 100%; height: 100%; border: none;">
+        </iframe>`;
+    } else {
+      // Dahili basit oyunları canvas ile oynat
+      startInternalGame(container);
     }
+    
     showModal('gameModal');
+  }
+
+  // Basit Dahili Oyun: Hedef Vurma (Refleks)
+  function startInternalGame(container) {
+    gameScore = 0;
+    gameTimeLeft = 30;
+    gameTargets = [];
+    
+    container.innerHTML = `
+      <canvas id="internalGameCanvas"></canvas>
+      <div id="gameOverlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.8); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10;">
+        <h2 style="color:white; font-size:24px; margin-bottom:10px;">Hedef Vurma</h2>
+        <p style="color:var(--muted); margin-bottom:20px;">Çıkan hedeflere mümkün olduğunca hızlı tıkla!</p>
+        <button class="btn-modal" style="width:auto; padding:12px 32px;" onclick="startGameLoop()">Başla</button>
+      </div>
+      <div id="gameHud" style="position:absolute; top:10px; left:10px; right:10px; display:none; justify-content:space-between; color:white; font-weight:bold; font-size:18px; pointer-events:none;">
+        <span>Skor: <span id="hudScore">0</span></span>
+        <span>Süre: <span id="hudTime">30</span>s</span>
+      </div>
+    `;
+
+    window.startGameLoop = function() {
+      document.getElementById('gameOverlay').style.display = 'none';
+      document.getElementById('gameHud').style.display = 'flex';
+      
+      const canvas = document.getElementById('internalGameCanvas');
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
+      const ctx = canvas.getContext('2d');
+
+      let lastTime = 0;
+      let spawnTimer = 0;
+
+      function spawnTarget() {
+        const radius = 20 + Math.random() * 20;
+        gameTargets.push({
+          x: radius + Math.random() * (canvas.width - radius * 2),
+          y: radius + Math.random() * (canvas.height - radius * 2),
+          radius: radius,
+          life: 1.0 // 1 saniye sonra kaybolur
+        });
+      }
+
+      canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickY = e.clientY - rect.top;
+
+        for (let i = gameTargets.length - 1; i >= 0; i--) {
+          const t = gameTargets[i];
+          const dist = Math.sqrt((clickX - t.x)**2 + (clickY - t.y)**2);
+          if (dist < t.radius) {
+            gameScore += 10;
+            document.getElementById('hudScore').textContent = gameScore;
+            gameTargets.splice(i, 1);
+            break;
+          }
+        }
+      });
+
+      function gameLoop(timestamp) {
+        if (!internalGameLoop) return; // Döngü durdurulduysa çık
+        
+        const deltaTime = (timestamp - lastTime) / 1000;
+        lastTime = timestamp;
+
+        if (gameTimeLeft > 0) {
+          gameTimeLeft -= deltaTime;
+          document.getElementById('hudTime').textContent = Math.ceil(gameTimeLeft);
+          
+          spawnTimer += deltaTime;
+          if (spawnTimer > 0.8) { // Her 0.8 saniyede bir hedef
+            spawnTarget();
+            spawnTimer = 0;
+          }
+        } else {
+          // Oyun Bitti
+          internalGameLoop = null;
+          document.getElementById('gameOverlay').innerHTML = `
+            <h2 style="color:white; font-size:28px; margin-bottom:10px;">Oyun Bitti!</h2>
+            <p style="color:var(--accent); font-size:24px; font-weight:bold; margin-bottom:20px;">Toplam Skor: ${gameScore}</p>
+            <button class="btn-modal" style="width:auto; padding:12px 32px;" onclick="startGameLoop()">Tekrar Oyna</button>
+          `;
+          document.getElementById('gameOverlay').style.display = 'flex';
+          document.getElementById('gameHud').style.display = 'none';
+          gameTargets = [];
+          return;
+        }
+
+        // Çizim
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        gameTargets.forEach(t => {
+          t.life -= deltaTime;
+          if (t.life > 0) {
+            ctx.beginPath();
+            ctx.arc(t.x, t.y, t.radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(139, 92, 246, ${t.life})`;
+            ctx.fill();
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // İç halka
+            ctx.beginPath();
+            ctx.arc(t.x, t.y, t.radius * 0.4, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(236, 72, 153, ${t.life})`;
+            ctx.fill();
+          }
+        });
+        
+        // Süresi dolanları temizle
+        gameTargets = gameTargets.filter(t => t.life > 0);
+
+        internalGameLoop = requestAnimationFrame(gameLoop);
+      }
+
+      internalGameLoop = requestAnimationFrame(gameLoop);
+    };
   }
 
   function closeGameModal() {
     closeModal('gameModal');
+    // Bellek ve işlemci temizliği
+    if (internalGameLoop) {
+      cancelAnimationFrame(internalGameLoop);
+      internalGameLoop = null;
+    }
     setTimeout(() => {
-      document.getElementById('gameFrameContainer').innerHTML = `<div class="game-placeholder"><span class="icon">🚀</span><p>Oyun başlatılıyor...</p></div>`;
+      document.getElementById('gameFrameContainer').innerHTML = ''; // iframe veya canvas'ı tamamen yok et
     }, 300);
   }
 
@@ -995,7 +1131,7 @@
     currentSortGame = 'action'; currentFilterGame = '';
     document.getElementById('searchInput').value = '';
     renderGames();
-    showToast('⚔️ Sadece Aksiyon oyunları gösteriliyor.');
+    showToast('⚔️ Sadece Aksiyon/FPS oyunları gösteriliyor.');
   });
 
   // ==========================================================
@@ -1025,12 +1161,15 @@
   document.querySelectorAll('.modal-overlay').forEach(modal => {
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
-        modal.classList.remove('active');
-        if (modal.id === 'previewModal' && currentPreviewUrl) {
-          URL.revokeObjectURL(currentPreviewUrl);
-          currentPreviewUrl = null;
+        if (modal.id === 'gameModal') {
+          closeGameModal();
+        } else {
+          modal.classList.remove('active');
+          if (modal.id === 'previewModal' && currentPreviewUrl) {
+            URL.revokeObjectURL(currentPreviewUrl);
+            currentPreviewUrl = null;
+          }
         }
-        if (modal.id === 'gameModal') closeGameModal();
       }
     });
   });
@@ -1039,7 +1178,7 @@
     let user = null;
     try { user = JSON.parse(localStorage.getItem('novaUser')); } catch (e) { user = null; }
     if (!user) {
-      user = { name: 'Misafir' }; // Tek dosya çalıştırmasında hata vermemesi için
+      user = { name: 'Misafir' };
       localStorage.setItem('novaUser', JSON.stringify(user));
     }
     const name = user.name || 'Kaptan';
@@ -1061,11 +1200,11 @@
   // Başlangıç
   (async () => {
     await seedDefaults();
-    switchTab('depo'); // Varsayılan sekme
+    switchTab('depo');
   })();
 
   // ==========================================================
-  // 5. GALAKSİ ANİMASYONU (Değiştirilmedi, optimize edildi)
+  // 5. GALAKSİ ANİMASYONU
   // ==========================================================
   const canvas = document.getElementById('galaxy-canvas');
   const ctx = canvas.getContext('2d');
