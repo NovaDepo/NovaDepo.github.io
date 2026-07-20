@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>NovaDepo • Ana Menü</title>
+<title>NovaPlay • Oyun Platformu</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -14,6 +14,7 @@
     --accent-2: #ec4899;
     --success: #10b981;
     --danger: #ef4444;
+    --warning: #f59e0b;
     --text: #f9fafb;
     --muted: #9ca3af;
     --card-bg: rgba(15, 12, 41, 0.65);
@@ -41,7 +42,7 @@
     backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--card-border);
   }
-  .nav-brand { display: flex; align-items: center; gap: 10px; color: white; }
+  .nav-brand { display: flex; align-items: center; gap: 10px; color: white; cursor: pointer; }
   .nav-brand .logo { font-size: 26px; animation: float 6s ease-in-out infinite; }
   .nav-brand .name { font-size: 18px; font-weight: 700; letter-spacing: 2px; }
   .nav-brand .name span { color: var(--accent); }
@@ -79,14 +80,7 @@
   .btn-logout:hover { background: rgba(239, 68, 68, 0.25); color: white; border-color: var(--danger); }
 
   .main { 
-    position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 30px 24px 60px; 
-    transition: all 0.3s ease;
-  }
-  .main.drag-over {
-    outline: 3px dashed var(--accent);
-    outline-offset: -10px;
-    background: rgba(6, 182, 212, 0.05);
-    border-radius: 24px;
+    position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 30px 24px 60px; 
   }
 
   .welcome { color: white; margin-bottom: 24px; }
@@ -97,35 +91,32 @@
   }
   .welcome p { font-size: 14px; opacity: 0.8; }
 
-  /* DEPOLAMA PANELİ */
-  .storage-card {
+  /* OYUNCU PANELİ */
+  .stats-card {
     background: var(--card-bg); border-radius: 18px; padding: 24px; margin-bottom: 24px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.4); border: 1px solid var(--card-border);
     backdrop-filter: blur(12px);
   }
-  .storage-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
-  .storage-title { font-size: 16px; font-weight: 700; color: white; display: flex; align-items: center; gap: 8px; }
-  .storage-badge { 
-    font-size: 11px; padding: 4px 10px; border-radius: 20px; 
-    background: rgba(16, 185, 129, 0.15); color: var(--success); font-weight: 600; 
-  }
+  .stats-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .stats-title { font-size: 16px; font-weight: 700; color: white; display: flex; align-items: center; gap: 8px; }
   
-  .storage-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 16px; }
-  .stat-box { background: rgba(255,255,255,0.03); padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 16px; }
+  .stat-box { background: rgba(255,255,255,0.03); padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
   .stat-box .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-  .stat-box .value { font-size: 18px; font-weight: 700; color: white; }
-  .stat-box .value.highlight { color: var(--accent); }
-  .stat-box .value.danger { color: var(--danger); }
+  .stat-box .value { font-size: 20px; font-weight: 800; color: white; }
+  .stat-box .value.accent { color: var(--accent); }
 
-  .progress-track { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
-  .progress-fill {
+  .level-track { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; position: relative; }
+  .level-fill {
     height: 100%; width: 0; border-radius: 4px;
-    background: linear-gradient(90deg, var(--primary), var(--accent));
-    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(90deg, var(--primary), var(--accent-2));
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
   }
+  .level-text { font-size: 11px; color: var(--muted); margin-top: 6px; text-align: right; }
 
   .section-title { color: white; font-size: 16px; margin: 26px 0 14px; display: flex; align-items: center; gap: 8px; }
-  .quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+  
+  .quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 30px; }
   .action-btn {
     background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px;
     padding: 18px 16px; cursor: pointer; transition: all 0.25s; text-align: center;
@@ -136,50 +127,60 @@
   .action-btn .icon { font-size: 28px; display: block; margin-bottom: 8px; }
   .action-btn .text { font-size: 13px; font-weight: 600; }
 
-  .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
-  .file-card {
-    background: var(--card-bg); border: 1px solid rgba(139, 92, 246, 0.15); border-radius: 14px;
-    padding: 18px 14px; cursor: pointer; transition: all 0.25s; text-align: center;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.3); position: relative; backdrop-filter: blur(8px);
+  /* OYUN IZGARASI */
+  .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+  .game-card {
+    background: var(--card-bg); border: 1px solid rgba(139, 92, 246, 0.15); border-radius: 16px;
+    overflow: hidden; cursor: pointer; transition: all 0.3s; position: relative;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3); backdrop-filter: blur(8px);
   }
-  .file-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 12px 28px rgba(6, 182, 212, 0.25); border-color: var(--accent); }
-  .file-card .file-icon { font-size: 40px; display: block; margin-bottom: 10px; }
-  .file-card .file-name { font-size: 13px; font-weight: 600; color: white; word-break: break-word; line-height: 1.3; }
-  .file-card .file-meta { font-size: 11px; color: var(--muted); margin-top: 4px; }
-  .file-card .badge {
-    position: absolute; top: 8px; right: 8px; font-size: 10px; padding: 2px 7px;
-    border-radius: 10px; background: rgba(139, 92, 246, 0.2); color: #c4b5fd; font-weight: 600;
+  .game-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 15px 35px rgba(6, 182, 212, 0.25); border-color: var(--accent); }
+  
+  .game-cover {
+    height: 120px; display: flex; align-items: center; justify-content: center;
+    font-size: 50px; position: relative;
   }
-  .file-card .action-btns {
-    position: absolute; top: 8px; left: 8px; display: flex; gap: 6px; opacity: 0; transition: all 0.2s;
+  .game-cover::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(15, 12, 41, 1) 0%, rgba(15, 12, 41, 0) 100%);
   }
-  .file-card:hover .action-btns { opacity: 1; }
-  .file-card .icon-btn {
-    width: 26px; height: 26px; border-radius: 50%; border: none; 
-    background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer; 
-    display: flex; align-items: center; justify-content: center; font-size: 12px;
-    transition: all 0.2s;
+  
+  .game-info { padding: 14px; position: relative; }
+  .game-badge {
+    position: absolute; top: -12px; right: 14px; font-size: 10px; padding: 4px 10px;
+    border-radius: 20px; background: var(--primary); color: white; font-weight: 700;
+    box-shadow: 0 4px 10px rgba(139, 92, 246, 0.4);
   }
-  .file-card .icon-btn.delete { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
-  .file-card .icon-btn.delete:hover { background: var(--danger); color: white; }
-  .file-card .icon-btn.rename:hover { background: var(--primary); color: white; }
+  .game-title { font-size: 15px; font-weight: 700; color: white; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .game-meta { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); }
+  .game-rating { color: var(--warning); font-weight: 600; }
+
+  .play-overlay {
+    position: absolute; inset: 0; background: rgba(139, 92, 246, 0.85);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.3s; backdrop-filter: blur(4px);
+  }
+  .game-card:hover .play-overlay { opacity: 1; }
+  .play-btn {
+    padding: 10px 24px; background: white; color: var(--primary-dark);
+    border: none; border-radius: 30px; font-weight: 800; font-size: 14px;
+    cursor: pointer; transform: scale(0.8); transition: transform 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+  .game-card:hover .play-btn { transform: scale(1); }
 
   .empty-state {
     grid-column: 1/-1; text-align: center; color: var(--muted); padding: 60px 20px;
     display: flex; flex-direction: column; align-items: center; gap: 16px;
   }
   .empty-state .icon { font-size: 48px; opacity: 0.5; }
-  .empty-state .btn { 
-    padding: 10px 20px; background: var(--primary); color: white; border: none; 
-    border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s;
-  }
-  .empty-state .btn:hover { background: var(--primary-dark); }
 
   @media (max-width: 640px) {
     .nav-search { display: none; }
     .navbar { padding: 12px 16px; }
     .user-chip .user-name { display: none; }
     .welcome h1 { font-size: 22px; }
+    .game-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
   }
 
   .toast {
@@ -193,10 +194,44 @@
   .toast.show { transform: translateX(0); }
   .toast.error { border-left-color: var(--danger); }
 
-  #fileInput { display: none; }
+  /* OYUN OYNATMA MODALI */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200; display: none;
+    align-items: center; justify-content: center; padding: 20px;
+    background: rgba(2, 0, 20, 0.9); backdrop-filter: blur(12px);
+  }
+  .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  
+  .game-modal-box {
+    background: #0f0c29; border: 1px solid var(--card-border);
+    border-radius: 20px; width: 100%; max-width: 800px; height: 80vh;
+    display: flex; flex-direction: column; overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.8); animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  
+  .game-modal-header {
+    padding: 16px 24px; border-bottom: 1px solid var(--card-border);
+    display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3);
+  }
+  .game-modal-title { font-size: 18px; font-weight: 700; color: white; display: flex; align-items: center; gap: 10px; }
+  .modal-close {
+    width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05); cursor: pointer; font-size: 16px; color: var(--muted); 
+    transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+  }
+  .modal-close:hover { background: var(--danger); color: white; border-color: var(--danger); }
+  
+  .game-frame-container {
+    flex: 1; background: #000; position: relative; display: flex; align-items: center; justify-content: center;
+  }
+  .game-frame-container iframe { width: 100%; height: 100%; border: none; }
+  .game-placeholder { text-align: center; color: var(--muted); }
+  .game-placeholder .icon { font-size: 64px; margin-bottom: 16px; display: block; }
 
   .loading-overlay {
-    position: fixed; inset: 0; background: rgba(2, 0, 20, 0.85); z-index: 999;
+    position: fixed; inset: 0; background: rgba(2, 0, 20, 0.9); z-index: 999;
     display: none; align-items: center; justify-content: center; flex-direction: column;
     backdrop-filter: blur(8px);
   }
@@ -207,46 +242,6 @@
     animation: spin 1s linear infinite; margin-bottom: 12px;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  .modal-overlay {
-    position: fixed; inset: 0; z-index: 200; display: none;
-    align-items: center; justify-content: center; padding: 20px;
-    background: rgba(2, 0, 20, 0.85); backdrop-filter: blur(8px);
-  }
-  .modal-overlay.active { display: flex; animation: fadeIn 0.25s ease; }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  .modal-box {
-    background: rgba(15, 12, 41, 0.95); border: 1px solid var(--card-border);
-    border-radius: 20px; padding: 30px 28px; width: 100%; max-width: 380px;
-    text-align: center; position: relative; box-shadow: 0 25px 60px rgba(0,0,0,0.6);
-    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: var(--text);
-  }
-  @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-  .modal-close {
-    position: absolute; top: 14px; right: 14px; width: 30px; height: 30px; border-radius: 50%;
-    border: none; background: rgba(255,255,255,0.1); cursor: pointer; font-size: 14px; color: var(--muted); transition: all 0.2s;
-  }
-  .modal-close:hover { background: rgba(255,255,255,0.2); color: white; }
-  .modal-icon { font-size: 44px; margin-bottom: 8px; }
-  .modal-box h3 { font-size: 20px; margin-bottom: 4px; color: white; }
-  .modal-box .modal-sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
-  .modal-input {
-    width: 100%; padding: 12px 14px; border: 1.5px solid var(--card-border); border-radius: 10px;
-    font-size: 14px; margin-bottom: 14px; transition: all 0.25s; background: rgba(255,255,255,0.05); color: white;
-  }
-  .modal-input::placeholder { color: rgba(255,255,255,0.3); }
-  .modal-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(139,92,246,0.15); }
-  .btn-modal {
-    width: 100%; padding: 12px; background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white; border: none; border-radius: 10px; font-size: 14.5px; font-weight: 600; cursor: pointer;
-    transition: all 0.25s; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
-  }
-  .btn-modal:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(139, 92, 246, 0.55); }
-  
-  #previewImage {
-    max-width: 100%; max-height: 60vh; border-radius: 12px; margin-bottom: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-  }
 </style>
 </head>
 <body>
@@ -255,103 +250,88 @@
 
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner"></div>
-  <p style="color: white; font-size: 14px;">Dosyalar işleniyor...</p>
+  <p style="color: white; font-size: 14px;">Oyun yükleniyor...</p>
 </div>
 
 <nav class="navbar">
-  <div class="nav-brand">
-    <span class="logo">🪐</span>
-    <span class="name">NOVA<span>DEPO</span></span>
+  <div class="nav-brand" onclick="resetFilter()">
+    <span class="logo">🎮</span>
+    <span class="name">NOVA<span>PLAY</span></span>
   </div>
   <div class="nav-search">
     <span class="search-icon">🔍</span>
-    <input type="text" id="searchInput" placeholder="Dosya veya klasör ara..." />
+    <input type="text" id="searchInput" placeholder="Oyun, tür veya etiket ara..." />
     <button class="clear-search" id="clearSearch">✕</button>
   </div>
   <div class="nav-user">
     <div class="user-chip">
-      <div class="avatar" id="avatar">N</div>
-      <span class="user-name" id="userName">Kullanıcı</span>
+      <div class="avatar" id="avatar">O</div>
+      <span class="user-name" id="userName">Oyuncu</span>
     </div>
     <button class="btn-logout" id="logoutBtn">Çıkış 🚪</button>
   </div>
 </nav>
 
-<main class="main" id="dropZone">
+<main class="main">
   <div class="welcome">
-    <h1>Hoş geldin, <span class="highlight" id="welcomeName">Kaptan</span>! 🌌</h1>
-    <p>Dosyalarını buraya sürükleyip bırakabilir veya aşağıdaki butonları kullanabilirsin.</p>
+    <h1>Hoş geldin, <span class="highlight" id="welcomeName">Oyuncu</span>! 🌌</h1>
+    <p>Yeni maceralara hazır mısın? Kütüphanenden bir oyun seç veya rastgele bir maceraya atıl.</p>
   </div>
 
-  <!-- TARAYICI DEPOLAMA PANELİ -->
-  <div class="storage-card">
-    <div class="storage-header">
-      <div class="storage-title">💾 Tarayıcı Depolama Kotası</div>
-      <div class="storage-badge" id="storageStatusBadge">Sağlıklı</div>
+  <!-- OYUNCU İSTATİSTİK PANELİ -->
+  <div class="stats-card">
+    <div class="stats-header">
+      <div class="stats-title">📊 Oyuncu Profili</div>
     </div>
-    
-    <div class="storage-stats">
+    <div class="stats-grid">
       <div class="stat-box">
-        <div class="label">Maksimum İzin Verilen Alan</div>
-        <div class="value" id="statQuota">Hesaplanıyor...</div>
+        <div class="label">Toplam Oynanan</div>
+        <div class="value accent" id="statHours">124 Saat</div>
       </div>
       <div class="stat-box">
-        <div class="label">NovaDepo Kullanımı</div>
-        <div class="value highlight" id="statUsed">0 B</div>
+        <div class="label">Favori Tür</div>
+        <div class="value" id="statGenre">Aksiyon</div>
       </div>
       <div class="stat-box">
-        <div class="label">Sistemdeki Tahmini Boş Alan</div>
-        <div class="value" id="statAvailable">Hesaplanıyor...</div>
+        <div class="label">Çevrimiçi Oyuncu</div>
+        <div class="value" style="color: var(--success);" id="statOnline">1,402</div>
       </div>
     </div>
-
-    <div class="progress-track">
-      <div class="progress-fill" id="progressFill"></div>
+    <div class="level-track">
+      <div class="level-fill" id="levelFill" style="width: 0%;"></div>
     </div>
+    <div class="level-text">Seviye 12 <span style="float: right;">%65 (2450 / 3800 XP)</span></div>
   </div>
 
   <h2 class="section-title">⚡ Hızlı Eylemler</h2>
   <div class="quick-actions">
-    <button class="action-btn" id="btnUpload"><span class="icon">📤</span><span class="text">Dosya Yükle</span></button>
-    <button class="action-btn" id="btnFolder"><span class="icon">📁</span><span class="text">Yeni Klasör</span></button>
-    <button class="action-btn" id="btnSort"><span class="icon">🔃</span><span class="text">Sırala (A-Z)</span></button>
-    <button class="action-btn" id="btnClear"><span class="icon">🗑️</span><span class="text">Tümünü Temizle</span></button>
+    <button class="action-btn" id="btnRandom"><span class="icon">🎲</span><span class="text">Rastgele Oyun</span></button>
+    <button class="action-btn" id="btnTop"><span class="icon">🏆</span><span class="text">En Çok Oynanan</span></button>
+    <button class="action-btn" id="btnFav"><span class="icon">⭐</span><span class="text">Favorilerim</span></button>
+    <button class="action-btn" id="btnAction"><span class="icon">⚔️</span><span class="text">Aksiyon Türü</span></button>
   </div>
 
-  <div class="file-grid" id="fileGrid"></div>
+  <h2 class="section-title">🎮 Oyun Kütüphanesi</h2>
+  <div class="game-grid" id="gameGrid"></div>
 </main>
 
-<input type="file" id="fileInput" multiple />
-
-<!-- MODALLAR -->
-<div class="modal-overlay" id="folderModal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('folderModal')">✕</button>
-    <div class="modal-icon">📁</div>
-    <h3>Yeni Klasör</h3>
-    <p class="modal-sub">Klasörüne bir isim ver</p>
-    <input type="text" class="modal-input" id="folderNameInput" placeholder="Örn: Çalışma Dosyaları" />
-    <button class="btn-modal" id="confirmFolderBtn">Oluştur</button>
-  </div>
-</div>
-
-<div class="modal-overlay" id="renameModal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('renameModal')">✕</button>
-    <div class="modal-icon">✏️</div>
-    <h3>Yeniden Adlandır</h3>
-    <p class="modal-sub">Yeni isim girin</p>
-    <input type="text" class="modal-input" id="renameInput" placeholder="Yeni ad" />
-    <button class="btn-modal" id="confirmRenameBtn">Kaydet</button>
-  </div>
-</div>
-
-<div class="modal-overlay" id="previewModal">
-  <div class="modal-box" style="max-width: 600px;">
-    <button class="modal-close" onclick="closeModal('previewModal')">✕</button>
-    <img id="previewImage" src="" alt="Önizleme" />
-    <h3 id="previewName" style="font-size: 16px; margin-top: 8px;"></h3>
-    <button class="btn-modal" id="downloadFromPreview" style="margin-top: 12px;">📥 İndir</button>
+<!-- OYUN OYNATMA MODALI -->
+<div class="modal-overlay" id="gameModal">
+  <div class="game-modal-box">
+    <div class="game-modal-header">
+      <div class="game-modal-title">
+        <span id="modalGameIcon">🎮</span>
+        <span id="modalGameTitle">Oyun Adı</span>
+      </div>
+      <button class="modal-close" onclick="closeGameModal()">✕</button>
+    </div>
+    <div class="game-frame-container" id="gameFrameContainer">
+      <!-- Iframe buraya dinamik olarak eklenecek -->
+      <div class="game-placeholder">
+        <span class="icon">🚀</span>
+        <p>Oyun başlatılıyor...</p>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -359,424 +339,186 @@
 
 <script>
   // ==========================================================
-  // 1. VERİTABANI (IndexedDB)
+  // 1. OYUN VERİTABANI (MOCK DATA)
   // ==========================================================
-  const DB_NAME = 'NovaDepoDB';
-  const STORE_NAME = 'files';
+  // Gerçek bir projede bu veriler bir API'den (Backend) gelir.
+  // "url" kısmına gerçek HTML5 oyun iframe linkleri eklenebilir.
+  const gamesDB = [
+    { id: 1, title: "Cyber Racer 2077", genre: "Yarış", rating: "4.8", players: "12.5K", icon: "🏎️", color: "linear-gradient(135deg, #ef4444, #b91c1c)", url: "https://html5.gamedistribution.com/rvvASMiM/5e0e4c8c5c0e4b0a8e0e4c8c5c0e4b0a/" },
+    { id: 2, title: "Galaxy Defender", genre: "Aksiyon", rating: "4.5", players: "8.2K", icon: "🚀", color: "linear-gradient(135deg, #8b5cf6, #6d28d9)", url: "" },
+    { id: 3, title: "Puzzle Mind", genre: "Bulmaca", rating: "4.9", players: "25K", icon: "🧩", color: "linear-gradient(135deg, #06b6d4, #0891b2)", url: "" },
+    { id: 4, title: "Zombie Survival", genre: "Korku", rating: "4.2", players: "5.1K", icon: "🧟", color: "linear-gradient(135deg, #10b981, #047857)", url: "" },
+    { id: 5, title: "Chess Master", genre: "Strateji", rating: "4.7", players: "15K", icon: "♟️", color: "linear-gradient(135deg, #f59e0b, #d97706)", url: "" },
+    { id: 6, title: "Space Miner", genre: "Simülasyon", rating: "4.4", players: "3.8K", icon: "⛏️", color: "linear-gradient(135deg, #ec4899, #be185d)", url: "" },
+    { id: 7, title: "Ninja Jump", genre: "Aksiyon", rating: "4.6", players: "9.3K", icon: "🥷", color: "linear-gradient(135deg, #6366f1, #4338ca)", url: "" },
+    { id: 8, title: "Farm Tycoon", genre: "Simülasyon", rating: "4.3", players: "7.7K", icon: "🚜", color: "linear-gradient(135deg, #84cc16, #65a30d)", url: "" }
+  ];
 
-  function initDB() {
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open(DB_NAME, 1);
-      request.onupgradeneeded = (e) => {
-        const db = e.target.result;
-        if (!db.objectStoreNames.contains(STORE_NAME)) {
-          db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-        }
-      };
-      request.onsuccess = (e) => resolve(e.target.result);
-      request.onerror = (e) => reject(e.target.error);
-    });
-  }
-
-  async function dbAdd(record) {
-    const db = await initDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, 'readwrite');
-      tx.objectStore(STORE_NAME).put(record);
-      tx.oncomplete = () => resolve();
-      tx.onerror = (e) => reject(e.target.error);
-    });
-  }
-
-  async function dbGetAll() {
-    const db = await initDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, 'readonly');
-      const req = tx.objectStore(STORE_NAME).getAll();
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = (e) => reject(e.target.error);
-    });
-  }
-
-  async function dbDelete(id) {
-    const db = await initDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, 'readwrite');
-      tx.objectStore(STORE_NAME).delete(id);
-      tx.oncomplete = () => resolve();
-      tx.onerror = (e) => reject(e.target.error);
-    });
-  }
-
-  async function dbClear() {
-    const db = await initDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, 'readwrite');
-      tx.objectStore(STORE_NAME).clear();
-      tx.oncomplete = () => resolve();
-      tx.onerror = (e) => reject(e.target.error);
-    });
-  }
-
-  // ==========================================================
-  // 2. ARAYÜZ VE YARDIMCI FONKSİYONLAR
-  // ==========================================================
-  function formatBytes(bytes, decimals = 2) {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-  }
-
-  function getFileIcon(type, name, isFolder) {
-    if (isFolder) return '📁';
-    if (type.includes('image') || name.match(/\.(jpg|jpeg|png|gif|webp)$/i)) return '🖼️';
-    if (type.includes('video') || name.match(/\.(mp4|mkv|avi|mov)$/i)) return '🎬';
-    if (type.includes('pdf') || name.match(/\.pdf$/i)) return '📄';
-    if (name.match(/\.(xlsx|csv|xls)$/i)) return '📊';
-    if (name.match(/\.(zip|rar|7z)$/i)) return '📦';
-    return '📄';
-  }
-
-  function showModal(id) { document.getElementById(id).classList.add('active'); }
-  function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-
-  let currentSortAsc = true;
+  let favorites = JSON.parse(localStorage.getItem('novaFavorites')) || [];
   let currentFilter = '';
-  let currentRenameId = null;
-  let currentPreviewUrl = null;
+  let currentSort = 'all'; // all, top, fav, action
 
-  // GERÇEK DEPOLAMA BİLGİSİNİ GÜNCELLE
-  async function updateRealStorageInfo() {
-    const allFiles = await dbGetAll();
-    const novaDepoUsage = allFiles.reduce((acc, f) => acc + (f.size || 0), 0);
-    
-    document.getElementById('statUsed').textContent = formatBytes(novaDepoUsage);
+  // ==========================================================
+  // 2. ARAYÜZ FONKSİYONLARI
+  // ==========================================================
+  function renderGames() {
+    const grid = document.getElementById('gameGrid');
+    grid.innerHTML = '';
 
-    if ('storage' in navigator && 'estimate' in navigator.storage) {
-      try {
-        const estimate = await navigator.storage.estimate();
-        const quota = estimate.quota || 0;
-        const usage = estimate.usage || 0;
-        const available = quota - usage;
-
-        document.getElementById('statQuota').textContent = formatBytes(quota);
-        document.getElementById('statAvailable').textContent = formatBytes(available);
-
-        const percent = quota > 0 ? Math.min((usage / quota) * 100, 100) : 0;
-        document.getElementById('progressFill').style.width = `${percent}%`;
-
-        const badge = document.getElementById('storageStatusBadge');
-        if (percent > 90) {
-          badge.textContent = 'Kritik Düşük Alan';
-          badge.style.background = 'rgba(239, 68, 68, 0.15)';
-          badge.style.color = 'var(--danger)';
-          document.getElementById('statAvailable').classList.add('danger');
-        } else if (percent > 70) {
-          badge.textContent = 'Dikkat';
-          badge.style.background = 'rgba(245, 158, 11, 0.15)';
-          badge.style.color = '#f59e0b';
-          document.getElementById('statAvailable').classList.remove('danger');
-        } else {
-          badge.textContent = 'Sağlıklı';
-          badge.style.background = 'rgba(16, 185, 129, 0.15)';
-          badge.style.color = 'var(--success)';
-          document.getElementById('statAvailable').classList.remove('danger');
-        }
-      } catch (err) {
-        document.getElementById('statQuota').textContent = 'Kısıtlı';
-        document.getElementById('statAvailable').textContent = 'Bilinmiyor';
-      }
-    } else {
-      document.getElementById('statQuota').textContent = 'Desteklenmiyor';
-      document.getElementById('statAvailable').textContent = 'Bilinmiyor';
-    }
-  }
-
-  async function refreshAll() {
-    await updateRealStorageInfo();
-    
-    const allFiles = await dbGetAll();
-    let filtered = allFiles.filter(f => f.name.toLowerCase().includes(currentFilter.toLowerCase()));
-    
-    filtered.sort((a, b) => {
-      if (a.isFolder && !b.isFolder) return -1;
-      if (!a.isFolder && b.isFolder) return 1;
-      return currentSortAsc ? a.name.localeCompare(b.name, 'tr') : b.name.localeCompare(a.name, 'tr');
+    let filteredGames = gamesDB.filter(game => {
+      const matchesSearch = game.title.toLowerCase().includes(currentFilter.toLowerCase()) || 
+                            game.genre.toLowerCase().includes(currentFilter.toLowerCase());
+      
+      if (currentSort === 'fav') return matchesSearch && favorites.includes(game.id);
+      if (currentSort === 'top') return matchesSearch && parseFloat(game.players) > 10; // Basit bir "çok oynanan" filtresi
+      if (currentSort === 'action') return matchesSearch && game.genre === 'Aksiyon';
+      
+      return matchesSearch;
     });
 
     document.getElementById('clearSearch').style.display = currentFilter ? 'block' : 'none';
 
-    const grid = document.getElementById('fileGrid');
-    grid.innerHTML = '';
-    
-    if (filtered.length === 0) {
+    if (filteredGames.length === 0) {
       grid.innerHTML = `
         <div class="empty-state">
           <div class="icon">🌌</div>
-          <p>Burada hiçbir şey yok. Evreni doldurmaya başla!</p>
-          <button class="btn" onclick="document.getElementById('fileInput').click()">📤 İlk Dosyanı Yükle</button>
+          <p>Bu kriterlere uygun oyun bulunamadı.</p>
         </div>`;
       return;
     }
 
-    filtered.forEach(file => {
+    filteredGames.forEach(game => {
+      const isFav = favorites.includes(game.id);
       const card = document.createElement('div');
-      card.className = 'file-card';
+      card.className = 'game-card';
       card.innerHTML = `
-        <div class="action-btns">
-          <button class="icon-btn rename" data-id="${file.id}" title="Yeniden Adlandır">✏️</button>
-          <button class="icon-btn delete" data-id="${file.id}" title="Kalıcı Olarak Sil">🗑️</button>
+        <div class="game-cover" style="background: ${game.color};">
+          <span style="z-index: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">${game.icon}</span>
+          <div class="play-overlay">
+            <button class="play-btn" onclick="launchGame(${game.id})">▶ OYNA</button>
+          </div>
         </div>
-        ${file.isFolder ? '<span class="badge">Klasör</span>' : ''}
-        <span class="file-icon">${getFileIcon(file.type, file.name, file.isFolder)}</span>
-        <div class="file-name">${file.name}</div>
-        <div class="file-meta">${file.isFolder ? 'Klasör' : formatBytes(file.size)} • ${file.date}</div>
+        <div class="game-info">
+          <span class="game-badge">${game.genre}</span>
+          <div class="game-title">${game.title}</div>
+          <div class="game-meta">
+            <span class="game-rating">★ ${game.rating}</span>
+            <span>👥 ${game.players}</span>
+          </div>
+          <div style="margin-top: 10px; display: flex; gap: 8px;">
+            <button class="action-btn" style="flex:1; padding: 8px; font-size: 12px;" onclick="toggleFav(${game.id}, event)">
+              ${isFav ? '⭐ Favoride' : '☆ Favorile'}
+            </button>
+          </div>
+        </div>
       `;
-      
-      card.addEventListener('click', async (e) => {
-        if (e.target.closest('.action-btns')) return;
-        
-        if (file.isFolder) {
-          showToast(`📁 "${file.name}" klasörü seçildi.`);
-          return;
-        }
-
-        if (!file.blob) {
-          showToast('⚠️ Bu dosyanın içeriği bulunamadı.', true);
-          return;
-        }
-
-        if (file.type.includes('image') || file.name.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
-          currentPreviewUrl = URL.createObjectURL(file.blob);
-          document.getElementById('previewImage').src = currentPreviewUrl;
-          document.getElementById('previewName').textContent = file.name;
-          
-          const dlBtn = document.getElementById('downloadFromPreview');
-          dlBtn.onclick = () => {
-            const a = document.createElement('a');
-            a.href = currentPreviewUrl;
-            a.download = file.name;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          };
-          showModal('previewModal');
-        } else {
-          showToast('⏳ Dosya indiriliyor...');
-          const url = URL.createObjectURL(file.blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = file.name;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          setTimeout(() => URL.revokeObjectURL(url), 1000);
-          showToast('✅ İndirme başladı!');
-        }
-      });
-
       grid.appendChild(card);
     });
+  }
 
-    document.querySelectorAll('.icon-btn.delete').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        if (confirm('Bu öğeyi kalıcı olarak silmek istediğinize emin misiniz?')) {
-          try {
-            await dbDelete(btn.dataset.id);
-            showToast('🗑️ Öğe silindi ve alan geri kazanıldı.');
-            refreshAll();
-          } catch (err) { showToast('⚠️ Silme başarısız!', true); }
-        }
-      });
-    });
+  function toggleFav(id, event) {
+    event.stopPropagation();
+    if (favorites.includes(id)) {
+      favorites = favorites.filter(favId => favId !== id);
+      showToast('⭐ Favorilerden çıkarıldı.');
+    } else {
+      favorites.push(id);
+      showToast('✅ Favorilere eklendi!');
+    }
+    localStorage.setItem('novaFavorites', JSON.stringify(favorites));
+    renderGames();
+  }
 
-    document.querySelectorAll('.icon-btn.rename').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        currentRenameId = btn.dataset.id;
-        const file = allFiles.find(f => f.id === currentRenameId);
-        if (file) {
-          document.getElementById('renameInput').value = file.name;
-          showModal('renameModal');
-          setTimeout(() => document.getElementById('renameInput').focus(), 100);
-        }
-      });
-    });
+  function launchGame(id) {
+    const game = gamesDB.find(g => g.id === id);
+    if (!game) return;
+
+    document.getElementById('modalGameTitle').textContent = game.title;
+    document.getElementById('modalGameIcon').textContent = game.icon;
+    
+    const container = document.getElementById('gameFrameContainer');
+    
+    // Gerçek bir oyun URL'si varsa iframe yükle, yoksa placeholder göster
+    if (game.url) {
+      container.innerHTML = `<iframe src="${game.url}" allowfullscreen></iframe>`;
+    } else {
+      container.innerHTML = `
+        <div class="game-placeholder">
+          <span class="icon">${game.icon}</span>
+          <h3 style="color: white; margin-bottom: 8px;">${game.title}</h3>
+          <p>Bu oyun şu anda demo modunda.</p>
+          <p style="font-size: 12px; margin-top: 10px; opacity: 0.6;">(Gerçek bir projede buraya oyun iframe'i veya WebGL canvas'ı gelir)</p>
+          <button class="btn-modal" style="margin-top: 20px; width: auto; padding: 10px 24px;" onclick="closeGameModal()">Kapat</button>
+        </div>
+      `;
+    }
+    
+    document.getElementById('gameModal').classList.add('active');
+  }
+
+  function closeGameModal() {
+    document.getElementById('gameModal').classList.remove('active');
+    // Iframe'i temizle ki ses/video arka planda çalmaya devam etmesin
+    setTimeout(() => {
+      document.getElementById('gameFrameContainer').innerHTML = `
+        <div class="game-placeholder">
+          <span class="icon">🚀</span>
+          <p>Oyun başlatılıyor...</p>
+        </div>`;
+    }, 300);
+  }
+
+  function resetFilter() {
+    currentFilter = '';
+    currentSort = 'all';
+    document.getElementById('searchInput').value = '';
+    renderGames();
   }
 
   // ==========================================================
   // 3. ETKİLEŞİM OLAYLARI
   // ==========================================================
-  const fileInput = document.getElementById('fileInput');
-  document.getElementById('btnUpload').addEventListener('click', () => fileInput.click());
-  
-  fileInput.addEventListener('change', async (e) => {
-    const newFiles = Array.from(e.target.files);
-    if (newFiles.length === 0) return;
-
-    document.getElementById('loadingOverlay').classList.add('active');
-    try {
-      for (const file of newFiles) {
-        await dbAdd({
-          id: Date.now() + Math.random().toString(36).substr(2, 9),
-          name: file.name,
-          type: file.type || 'unknown',
-          size: file.size,
-          date: new Date().toLocaleDateString('tr-TR'),
-          isFolder: false,
-          blob: file
-        });
-      }
-      showToast(`✅ ${newFiles.length} dosya depolandı!`);
-      fileInput.value = '';
-      await refreshAll();
-    } catch (err) {
-      showToast(err.name === 'QuotaExceededError' ? '⚠️ Depolama kotası doldu!' : '⚠️ Yükleme hatası!', true);
-    } finally {
-      document.getElementById('loadingOverlay').classList.remove('active');
-    }
-  });
-
-  const dropZone = document.getElementById('dropZone');
-  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    dropZone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
-  });
-  dropZone.addEventListener('dragover', () => dropZone.classList.add('drag-over'));
-  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-  dropZone.addEventListener('drop', async (e) => {
-    dropZone.classList.remove('drag-over');
-    const newFiles = Array.from(e.dataTransfer.files);
-    if (newFiles.length > 0) {
-      document.getElementById('loadingOverlay').classList.add('active');
-      try {
-        for (const file of newFiles) {
-          await dbAdd({
-            id: Date.now() + Math.random().toString(36).substr(2, 9),
-            name: file.name,
-            type: file.type || 'unknown',
-            size: file.size,
-            date: new Date().toLocaleDateString('tr-TR'),
-            isFolder: false,
-            blob: file
-          });
-        }
-        showToast(`✅ ${newFiles.length} dosya depolandı!`);
-        await refreshAll();
-      } catch (err) { showToast('⚠️ Yükleme hatası!', true); } 
-      finally { document.getElementById('loadingOverlay').classList.remove('active'); }
-    }
-  });
-
-  document.getElementById('btnFolder').addEventListener('click', () => {
-    document.getElementById('folderNameInput').value = '';
-    showModal('folderModal');
-    setTimeout(() => document.getElementById('folderNameInput').focus(), 100);
-  });
-
-  document.getElementById('confirmFolderBtn').addEventListener('click', async () => {
-    const name = document.getElementById('folderNameInput').value.trim();
-    if (!name) { showToast('⚠️ Lütfen bir isim girin', true); return; }
-    
-    const allFiles = await dbGetAll();
-    if (allFiles.some(f => f.name.toLowerCase() === name.toLowerCase())) {
-      showToast('⚠️ Bu isimde bir öğe zaten var!', true); return;
-    }
-
-    await dbAdd({
-      id: Date.now().toString(),
-      name: name,
-      type: 'folder',
-      size: 0,
-      date: new Date().toLocaleDateString('tr-TR'),
-      isFolder: true
-    });
-    closeModal('folderModal');
-    showToast('📁 Klasör oluşturuldu!');
-    refreshAll();
-  });
-
-  document.getElementById('confirmRenameBtn').addEventListener('click', async () => {
-    const newName = document.getElementById('renameInput').value.trim();
-    if (!newName) { showToast('⚠️ İsim boş olamaz', true); return; }
-
-    const allFiles = await dbGetAll();
-    if (allFiles.some(f => f.id !== currentRenameId && f.name.toLowerCase() === newName.toLowerCase())) {
-      showToast('⚠️ Bu isimde bir öğe zaten var!', true); return;
-    }
-
-    const file = allFiles.find(f => f.id === currentRenameId);
-    if (file) {
-      file.name = newName;
-      await dbAdd(file);
-      closeModal('renameModal');
-      showToast('✏️ İsim başarıyla değiştirildi!');
-      refreshAll();
-    }
-  });
-
-  document.getElementById('btnSort').addEventListener('click', () => {
-    currentSortAsc = !currentSortAsc;
-    refreshAll();
-    showToast(`🔃 Dosyalar ${currentSortAsc ? 'A-Z' : 'Z-A'} sıralandı.`);
-  });
-
-  document.getElementById('btnClear').addEventListener('click', async () => {
-    if (confirm('DİKKAT: Tüm dosya ve klasörler kalıcı olarak silinecek. Onaylıyor musunuz?')) {
-      try {
-        await dbClear();
-        showToast('🗑️ Depolama alanı tamamen temizlendi.');
-        refreshAll();
-      } catch (err) { showToast('⚠️ Temizleme başarısız!', true); }
-    }
-  });
-
-  const searchInput = document.getElementById('searchInput');
-  searchInput.addEventListener('input', (e) => {
+  document.getElementById('searchInput').addEventListener('input', (e) => {
     currentFilter = e.target.value;
-    refreshAll();
+    currentSort = 'all';
+    renderGames();
   });
-  document.getElementById('clearSearch').addEventListener('click', () => {
-    searchInput.value = '';
+
+  document.getElementById('clearSearch').addEventListener('click', resetFilter);
+
+  document.getElementById('btnRandom').addEventListener('click', () => {
+    const randomGame = gamesDB[Math.floor(Math.random() * gamesDB.length)];
+    showToast(`🎲 Rastgele seçilen: ${randomGame.title}`);
+    setTimeout(() => launchGame(randomGame.id), 500);
+  });
+
+  document.getElementById('btnTop').addEventListener('click', () => {
+    currentSort = 'top';
     currentFilter = '';
-    refreshAll();
+    document.getElementById('searchInput').value = '';
+    renderGames();
+    showToast('🏆 En çok oynananlar listelendi.');
   });
 
-  document.querySelectorAll('.modal-overlay').forEach(modal => {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.classList.remove('active');
-        if (modal.id === 'previewModal' && currentPreviewUrl) {
-          URL.revokeObjectURL(currentPreviewUrl);
-          currentPreviewUrl = null;
-        }
-      }
-    });
+  document.getElementById('btnFav').addEventListener('click', () => {
+    currentSort = 'fav';
+    currentFilter = '';
+    document.getElementById('searchInput').value = '';
+    renderGames();
+    showToast('⭐ Favori oyunların gösteriliyor.');
   });
 
-  // ==========================================================
-  // 4. OTURUM VE GÜVENLİK
-  // ==========================================================
-  (function guard() {
-    let user = null;
-    try { user = JSON.parse(localStorage.getItem('novaUser')); } catch (e) { user = null; }
-    if (!user) {
-      window.location.replace('../');
-      return;
-    }
-    const name = user.name || 'Kaptan';
-    document.getElementById('avatar').textContent = name.charAt(0).toUpperCase();
-    document.getElementById('userName').textContent = name;
-    document.getElementById('welcomeName').textContent = name;
-  })();
+  document.getElementById('btnAction').addEventListener('click', () => {
+    currentSort = 'action';
+    currentFilter = '';
+    document.getElementById('searchInput').value = '';
+    renderGames();
+    showToast('⚔️ Sadece Aksiyon oyunları gösteriliyor.');
+  });
 
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.removeItem('novaUser');
-    showToast('👋 Çıkış yapıldı.');
-    setTimeout(() => { window.location.replace('../'); }, 800);
+  // Modal dışına tıklayınca kapatma
+  document.getElementById('gameModal').addEventListener('click', (e) => {
+    if (e.target.id === 'gameModal') closeGameModal();
   });
 
   function showToast(message, isError = false) {
@@ -787,13 +529,40 @@
     toast._t = setTimeout(() => toast.className = 'toast', 3000);
   }
 
-  (async () => {
-    await refreshAll();
+  // ==========================================================
+  // 4. OTURUM YÖNETİMİ
+  // ==========================================================
+  (function guard() {
+    let user = null;
+    try { user = JSON.parse(localStorage.getItem('novaUser')); } catch (e) { user = null; }
+    
+    // Demo amaçlı: Kullanıcı yoksa varsayılan ata
+    if (!user) {
+      user = { name: 'Misafir Oyuncu' };
+      localStorage.setItem('novaUser', JSON.stringify(user));
+    }
+    
+    const name = user.name || 'Oyuncu';
+    document.getElementById('avatar').textContent = name.charAt(0).toUpperCase();
+    document.getElementById('userName').textContent = name;
+    document.getElementById('welcomeName').textContent = name;
+    
+    // Seviye animasyonu
+    setTimeout(() => { document.getElementById('levelFill').style.width = '65%'; }, 500);
   })();
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('novaUser');
+    showToast('👋 Çıkış yapıldı.');
+    setTimeout(() => { location.reload(); }, 800);
+  });
+
+  // Başlangıçta çalıştır
+  renderGames();
 
 
   // ==========================================================
-  // 5. GALAKSİ ANİMASYONU
+  // 5. GALAKSİ ANİMASYONU (Orijinal koddan korundu)
   // ==========================================================
   const canvas = document.getElementById('galaxy-canvas');
   const ctx = canvas.getContext('2d');
