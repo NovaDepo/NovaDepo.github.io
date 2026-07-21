@@ -3,9 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>NovaDepo • Depo & Oyun</title>
+<title>NovaPlatform • Depo, Oyun & İndirme</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; } bu sitenin adını NOVAPLATFORM yap ve DOWNLOAD GAMES diye bir sekme ekle üst tarafa daha demo olsun eksiksiz yap hatasız ve düşünerek yap zaman ve saat sınırınyok satır sınırın yok
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
     --primary: #8b5cf6;
     --primary-dark: #6d28d9;
     --accent: #06b6d4;
@@ -47,11 +49,11 @@
   .nav-brand .name span { color: var(--accent); }
   @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
-  .nav-tabs { display: flex; gap: 8px; margin: 0 24px; }
+  .nav-tabs { display: flex; gap: 8px; margin: 0 24px; flex-wrap: wrap; }
   .nav-tab {
     background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
     color: var(--muted); padding: 8px 16px; border-radius: 20px; cursor: pointer;
-    font-size: 13px; font-weight: 600; transition: all 0.25s;
+    font-size: 13px; font-weight: 600; transition: all 0.25s; white-space: nowrap;
   }
   .nav-tab:hover { background: rgba(255,255,255,0.1); color: white; }
   .nav-tab.active { 
@@ -139,7 +141,7 @@
     font-weight: 700; font-size: 16px; color: var(--accent);
   }
 
-  /* Oyun Stilleri */
+  /* Oyun & İndirme Stilleri */
   .stats-card {
     background: var(--card-bg); border-radius: 18px; padding: 24px; margin-bottom: 24px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.4); border: 1px solid var(--card-border);
@@ -350,12 +352,13 @@
 <nav class="navbar">
   <div class="nav-brand" onclick="switchTab('depo')">
     <span class="logo">🌌</span>
-    <span class="name">NOVA<span>DEPO</span></span>
+    <span class="name">NOVA<span>PLATFORM</span></span>
   </div>
   
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="switchTab('depo')">📁 Depom</button>
     <button class="nav-tab" onclick="switchTab('oyun')">🎮 Oyunlar</button>
+    <button class="nav-tab" onclick="switchTab('indir')">⬇️ DOWNLOAD GAMES</button>
   </div>
 
   <div class="nav-search">
@@ -379,6 +382,7 @@
     <p id="welcomeText">Dosyalarını buraya sürükleyip bırakabilir veya aşağıdaki butonları kullanabilirsin.</p>
   </div>
 
+  <!-- DEPO SEKME İÇERİĞİ -->
   <div id="tab-depo" class="tab-content active">
     <div class="storage-card">
       <div class="storage-info">
@@ -405,6 +409,7 @@
     <div class="file-grid" id="fileGrid"></div>
   </div>
 
+  <!-- OYUN SEKME İÇERİĞİ -->
   <div id="tab-oyun" class="tab-content">
     <div class="stats-card">
       <div class="stats-header">
@@ -444,6 +449,17 @@
 
     <h2 class="section-title">🎮 Oyun Kütüphanesi</h2>
     <div class="game-grid" id="gameGrid"></div>
+  </div>
+
+  <!-- İNDİRME SEKME İÇERİĞİ (YENİ) -->
+  <div id="tab-indir" class="tab-content">
+    <div class="welcome">
+      <h1>📥 <span class="highlight">Download Games</span></h1>
+      <p>Platform dışı oyunları indirip cihazında saklayabilirsin. (Demo Modu Aktif)</p>
+    </div>
+    
+    <h2 class="section-title">🎮 İndirilebilir Oyunlar</h2>
+    <div class="game-grid" id="downloadGrid"></div>
   </div>
 </main>
 
@@ -503,6 +519,7 @@
   let currentTab = 'depo';
   let currentFilterDepo = '';
   let currentFilterGame = '';
+  let currentFilterDownload = '';
   let currentSortAsc = true;
   let currentRenameId = null;
   let currentPreviewUrl = null;
@@ -550,7 +567,7 @@
   function addGameSession(genre, minutes) {
     profileStats.totalMinutesPlayed += minutes;
     profileStats.genreCounts[genre] = (profileStats.genreCounts[genre] || 0) + 1;
-    profileStats.xp += 50; // Her oyun için 50 XP
+    profileStats.xp += 50;
     
     if (profileStats.xp >= profileStats.level * 350) {
       profileStats.level++;
@@ -572,17 +589,24 @@
       document.getElementById('searchInput').placeholder = "Dosya veya klasör ara...";
       document.getElementById('welcomeText').textContent = "Dosyalarını buraya sürükleyip bırakabilir veya aşağıdaki butonları kullanabilirsin.";
       refreshAll();
-    } else {
+    } else if (tab === 'oyun') {
       document.querySelector('.nav-tab[onclick="switchTab(\'oyun\')"]').classList.add('active');
       document.getElementById('tab-oyun').classList.add('active');
       document.getElementById('searchInput').placeholder = "Oyun, tür veya etiket ara...";
       document.getElementById('welcomeText').textContent = "Yeni maceralara hazır mısın? Kütüphanenden bir oyun seç veya rastgele bir maceraya atıl.";
       updateProfileUI();
       renderGames();
+    } else if (tab === 'indir') {
+      document.querySelector('.nav-tab[onclick="switchTab(\'indir\')"]').classList.add('active');
+      document.getElementById('tab-indir').classList.add('active');
+      document.getElementById('searchInput').placeholder = "İndirilecek oyun ara...";
+      document.getElementById('welcomeText').textContent = "Platform dışı oyunları indirip cihazında saklayabilirsin. (Demo Modu)";
+      renderDownloads();
     }
     document.getElementById('searchInput').value = '';
     currentFilterDepo = '';
     currentFilterGame = '';
+    currentFilterDownload = '';
     document.getElementById('clearSearch').style.display = 'none';
   }
 
@@ -905,7 +929,7 @@
   });
 
   // ==========================================================
-  // 3. OYUN MODÜLÜ (GLOBAL FONKSİYONLARLA)
+  // 3. OYUN MODÜLÜ
   // ==========================================================
   const gamesDB = [
     { id: 1, title: "G3Craft", genre: "Sandbox", rating: "4.9", players: "50K", icon: "⛏️", color: "linear-gradient(135deg, #10b981, #047857)", type: "external", url: "https://gizlioyuncu3.github.io/G3Craft" },
@@ -1211,15 +1235,67 @@
   });
 
   // ==========================================================
-  // 4. ORTAK ETKİLEŞİM VE OTURUM YÖNETİMİ
+  // 4. İNDİRME MODÜLÜ (DEMO)
+  // ==========================================================
+  const downloadGamesDB = [
+    { id: 101, title: "Cyber Odyssey", size: "45 GB", icon: "🤖", color: "linear-gradient(135deg, #06b6d4, #3b82f6)" },
+    { id: 102, title: "Forest Survivor", size: "12 GB", icon: "🌲", color: "linear-gradient(135deg, #22c55e, #15803d)" },
+    { id: 103, title: "Space Miner Pro", size: "8.5 GB", icon: "⛏️", color: "linear-gradient(135deg, #f59e0b, #d97706)" },
+    { id: 104, title: "Racing Legends", size: "60 GB", icon: "🏎️", color: "linear-gradient(135deg, #ef4444, #b91c1c)" },
+    { id: 105, title: "Mystic RPG", size: "25 GB", icon: "🧙‍♂️", color: "linear-gradient(135deg, #8b5cf6, #6d28d9)" },
+    { id: 106, title: "Zombie Outbreak", size: "32 GB", icon: "🧟", color: "linear-gradient(135deg, #374151, #111827)" }
+  ];
+
+  function renderDownloads() {
+    const grid = document.getElementById('downloadGrid');
+    grid.innerHTML = '';
+    
+    const filtered = downloadGamesDB.filter(g => g.title.toLowerCase().includes(currentFilterDownload.toLowerCase()));
+    
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><p>İndirilecek oyun bulunamadı.</p></div>`;
+      return;
+    }
+
+    filtered.forEach(game => {
+      const card = document.createElement('div');
+      card.className = 'game-card';
+      card.innerHTML = `
+        <div class="game-cover" style="background: ${game.color};">
+          <span style="z-index: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">${game.icon}</span>
+        </div>
+        <div class="game-info">
+          <div class="game-title">${game.title}</div>
+          <div class="game-meta">
+            <span>💾 ${game.size}</span>
+            <span style="color: var(--success);">✓ Demo</span>
+          </div>
+          <button class="action-btn" style="width: 100%; margin-top: 12px; padding: 10px; font-size: 13px; background: var(--success); border-color: var(--success); color: white;" onclick="window.simulateDownload('${game.title}')">
+            ⬇️ İNDİR
+          </button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  window.simulateDownload = function(gameTitle) {
+    showToast(`⏳ Demo: "${gameTitle}" indirme kuyruğuna eklendi! (Gerçek indirme için backend gerekli)`);
+  };
+
+  // ==========================================================
+  // 5. ORTAK ETKİLEŞİM VE OTURUM YÖNETİMİ
   // ==========================================================
   document.getElementById('searchInput').addEventListener('input', (e) => {
     if (currentTab === 'depo') {
       currentFilterDepo = e.target.value;
       refreshAll();
-    } else {
+    } else if (currentTab === 'oyun') {
       currentFilterGame = e.target.value;
       renderGames();
+    } else if (currentTab === 'indir') {
+      currentFilterDownload = e.target.value;
+      renderDownloads();
     }
   });
 
@@ -1228,9 +1304,12 @@
     if (currentTab === 'depo') {
       currentFilterDepo = '';
       refreshAll();
-    } else {
+    } else if (currentTab === 'oyun') {
       currentFilterGame = '';
       renderGames();
+    } else if (currentTab === 'indir') {
+      currentFilterDownload = '';
+      renderDownloads();
     }
   });
 
@@ -1278,7 +1357,7 @@
   })();
 
   // ==========================================================
-  // 5. GALAKSİ ANİMASYONU
+  // 6. GALAKSİ ANİMASYONU
   // ==========================================================
   const canvas = document.getElementById('galaxy-canvas');
   const ctx = canvas.getContext('2d');
