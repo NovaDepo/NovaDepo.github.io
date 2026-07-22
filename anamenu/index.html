@@ -465,7 +465,7 @@
   <div id="tab-indir" class="tab-content">
     <div class="welcome">
       <h1>📥 <span class="highlight">Download Games</span></h1>
-      <p>Platform dışı oyunları indirip cihazında saklayabilirsin. (Demo Modu Aktif)</p>
+      <p>Platform dışı oyunları indirip cihazında saklayabilirsin.</p>
     </div>
     
     <h2 class="section-title">🎮 İndirilebilir Oyunlar</h2>
@@ -615,7 +615,7 @@
       document.querySelector('.nav-tab[onclick="switchTab(\'indir\')"]').classList.add('active');
       document.getElementById('tab-indir').classList.add('active');
       document.getElementById('searchInput').placeholder = "İndirilecek oyun ara...";
-      document.getElementById('welcomeText').textContent = "Platform dışı oyunları indirip cihazında saklayabilirsin. (Demo Modu)";
+      document.getElementById('welcomeText').textContent = "Platform dışı oyunları indirip cihazında saklayabilirsin.";
       renderDownloads();
     }
     document.getElementById('searchInput').value = '';
@@ -1047,7 +1047,6 @@
     container.innerHTML = '';
 
     if (game.type === 'external' && game.url) {
-      // Maksimum uyumluluk için genişletilmiş izinler
       const allowAttrs = "fullscreen; pointer-lock; microphone; camera; autoplay; gamepad; clipboard-read; clipboard-write; xr-spatial-tracking; display-capture";
       const sandboxAttrs = "allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock allow-top-navigation allow-downloads allow-modals allow-presentation";
       
@@ -1058,7 +1057,7 @@
           style="width: 100%; height: 100%; border: none; background: #000;">
         </iframe>
         <div style="position:absolute; bottom:15px; right:15px; background:rgba(0,0,0,0.85); color:white; padding:10px 16px; border-radius:10px; font-size:13px; pointer-events:none; opacity:0.95; z-index:5; border: 1px solid rgba(255,255,255,0.15); max-width: 320px; text-align: right; backdrop-filter: blur(4px);">
-          💡 <b>Not:</b> Bazı oyunlar (ör. Eaglercraft) güvenlik nedeniyle iframe'de engellenebilir. Yüklenmezse sağ üstteki 🔗 butonuna tıklayın.
+          💡 <b>Not:</b> Bazı oyunlar güvenlik nedeniyle iframe'de engellenebilir. Yüklenmezse sağ üstteki 🔗 butonuna tıklayın.
         </div>
       `;
     } else if (game.gameId === 'aim') {
@@ -1283,7 +1282,7 @@
   });
 
   // ==========================================================
-  // 4. İNDİRME MODÜLÜ (DEMO)
+  // 4. İNDİRME MODÜLÜ
   // ==========================================================
   const downloadGamesDB = [
     { id: 101, title: "Cyber Odyssey", size: "45 GB", icon: "🤖", color: "linear-gradient(135deg, #06b6d4, #3b82f6)" },
@@ -1291,7 +1290,8 @@
     { id: 103, title: "Space Miner Pro", size: "8.5 GB", icon: "⛏️", color: "linear-gradient(135deg, #f59e0b, #d97706)" },
     { id: 104, title: "Racing Legends", size: "60 GB", icon: "🏎️", color: "linear-gradient(135deg, #ef4444, #b91c1c)" },
     { id: 105, title: "Mystic RPG", size: "25 GB", icon: "🧙‍♂️", color: "linear-gradient(135deg, #8b5cf6, #6d28d9)" },
-    { id: 106, title: "Zombie Outbreak", size: "32 GB", icon: "🧟", color: "linear-gradient(135deg, #374151, #111827)" }
+    { id: 106, title: "Zombie Outbreak", size: "32 GB", icon: "🧟", color: "linear-gradient(135deg, #374151, #111827)" },
+    { id: 107, title: "Undertale", size: "200 MB", icon: "💀", color: "linear-gradient(135deg, #111827, #fbbf24)", url: "https://mega.nz/file/giEGlb7D#WiZDAWCtLhxrX2UKk7Lobxc5hQVwjfOphPIWnhqfJO4" }
   ];
 
   function renderDownloads() {
@@ -1308,6 +1308,14 @@
     filtered.forEach(game => {
       const card = document.createElement('div');
       card.className = 'game-card';
+      
+      const hasLink = !!game.url;
+      const btnStyle = hasLink ? "background: #0070f1; border-color: #0070f1;" : "background: var(--success); border-color: var(--success);";
+      const btnText = hasLink ? "⬇️ MEGA İLE İNDİR" : "⬇️ İNDİR";
+      const badgeText = hasLink ? "MEGA" : "Demo";
+      const badgeColor = hasLink ? "#0070f1" : "var(--success)";
+      const clickAction = hasLink ? `window.open('${game.url}', '_blank')` : `window.simulateDownload('${game.title}')`;
+
       card.innerHTML = `
         <div class="game-cover" style="background: ${game.color};">
           <span style="z-index: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">${game.icon}</span>
@@ -1316,10 +1324,10 @@
           <div class="game-title">${game.title}</div>
           <div class="game-meta">
             <span>💾 ${game.size}</span>
-            <span style="color: var(--success);">✓ Demo</span>
+            <span style="color: ${badgeColor};">✓ ${badgeText}</span>
           </div>
-          <button class="action-btn" style="width: 100%; margin-top: 12px; padding: 10px; font-size: 13px; background: var(--success); border-color: var(--success); color: white;" onclick="window.simulateDownload('${game.title}')">
-            ⬇️ İNDİR
+          <button class="action-btn" style="width: 100%; margin-top: 12px; padding: 10px; font-size: 13px; color: white; ${btnStyle}" onclick="${clickAction}">
+            ${btnText}
           </button>
         </div>
       `;
