@@ -987,7 +987,7 @@
       card.className = 'game-card';
       card.innerHTML = `
         <div class="game-cover" style="background: ${game.color};">
-          <span style="z-index: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">${game.icon}</span>
+          <span style="z-index: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); font-size: 50px;">${game.icon}</span>
         </div>
         <div class="game-info">
           <span class="game-badge">${game.genre}</span>
@@ -1291,7 +1291,7 @@
     { id: 104, title: "Racing Legends", size: "60 GB", icon: "🏎️", color: "linear-gradient(135deg, #ef4444, #b91c1c)" },
     { id: 105, title: "Mystic RPG", size: "25 GB", icon: "🧙‍♂️", color: "linear-gradient(135deg, #8b5cf6, #6d28d9)" },
     { id: 106, title: "Zombie Outbreak", size: "32 GB", icon: "🧟", color: "linear-gradient(135deg, #374151, #111827)" },
-    { id: 107, title: "Undertale", size: "200 MB", icon: "💀", color: "linear-gradient(135deg, #111827, #fbbf24)", url: "https://mega.nz/file/giEGlb7D#WiZDAWCtLhxrX2UKk7Lobxc5hQVwjfOphPIWnhqfJO4" }
+    { id: 107, title: "Undertale", size: "200 MB", icon: "https://image.api.playstation.com/cdn/EP3746/CUSA09415_00/iOZJVz9HyD3V5UBwKA0HJg14znS8jRXa.png", color: "linear-gradient(135deg, #111827, #fbbf24)", url: "https://mega.nz/file/giEGlb7D#WiZDAWCtLhxrX2UKk7Lobxc5hQVwjfOphPIWnhqfJO4" }
   ];
 
   function renderDownloads() {
@@ -1316,9 +1316,14 @@
       const badgeColor = hasLink ? "#0070f1" : "var(--success)";
       const clickAction = hasLink ? `window.open('${game.url}', '_blank')` : `window.simulateDownload('${game.title}')`;
 
+      // İkon bir URL ise <img> etiketi, değilse emoji olarak render et
+      const iconHtml = game.icon.startsWith('http') 
+        ? `<img src="${game.icon}" alt="${game.title}" style="width: 80px; height: 80px; object-fit: contain; z-index: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); border-radius: 8px;" />`
+        : `<span style="z-index: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); font-size: 50px;">${game.icon}</span>`;
+
       card.innerHTML = `
         <div class="game-cover" style="background: ${game.color};">
-          <span style="z-index: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">${game.icon}</span>
+          ${iconHtml}
         </div>
         <div class="game-info">
           <div class="game-title">${game.title}</div>
