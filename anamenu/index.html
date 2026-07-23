@@ -43,16 +43,18 @@
     backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--card-border);
   }
-  .nav-brand { display: flex; align-items: center; gap: 10px; color: white; cursor: pointer; }
+  .nav-brand { display: flex; align-items: center; gap: 12px; color: white; cursor: pointer; }
   
-  /* Güncellenen Logo Stili */
+  /* Güncellenen ve Stabilize Edilen Logo Stili */
   .nav-brand .logo { 
-    width: 38px; 
-    height: 38px; 
-    border-radius: 10px; 
+    width: 42px; 
+    height: 42px; 
+    border-radius: 12px; 
     object-fit: cover; 
     animation: float 6s ease-in-out infinite; 
-    box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.6);
+    border: 2px solid rgba(139, 92, 246, 0.5);
+    background: rgba(15, 12, 41, 0.8);
   }
   
   .nav-brand .name { font-size: 18px; font-weight: 700; letter-spacing: 2px; }
@@ -221,7 +223,7 @@
   .game-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 15px 35px rgba(6, 182, 212, 0.25); border-color: var(--accent); }
   .game-cover {
     height: 120px; display: flex; align-items: center; justify-content: center;
-    font-size: 50px; position: relative;
+    position: relative;
   }
   .game-cover::after {
     content: ''; position: absolute; inset: 0;
@@ -305,7 +307,6 @@
   }
   .modal-close:hover { background: rgba(255,255,255,0.2); color: white; }
 
-  /* Yeni: Modal Header Butonları */
   .header-btn {
     width: 36px; height: 36px; border-radius: 8px;
     border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);
@@ -371,7 +372,6 @@
 
 <nav class="navbar">
   <div class="nav-brand" onclick="switchTab('depo')">
-    <!-- Güncellenen Logo -->
     <img class="logo" src="https://i.pinimg.com/originals/06/91/44/0691440278082ddae2fac86b30ff3b68.jpg?nii=t" alt="Nova Logo" />
     <span class="name">NOVA<span>PLATFORM</span></span>
   </div>
@@ -379,7 +379,8 @@
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="switchTab('depo')">📁 Depom</button>
     <button class="nav-tab" onclick="switchTab('oyun')">🎮 Oyunlar</button>
-    <button class="nav-tab" onclick="switchTab('indir')">⬇️ DOWNLOAD GAMES</button>
+    <button class="nav-tab" onclick="switchTab('indir')">⬇️ DOWNLOAD</button>
+    <button class="nav-tab" onclick="switchTab('mods')">🛠️ Mods</button>
   </div>
 
   <div class="nav-search">
@@ -482,6 +483,19 @@
     <h2 class="section-title">🎮 İndirilebilir Oyunlar</h2>
     <div class="game-grid" id="downloadGrid"></div>
   </div>
+
+  <!-- MODS SEKME İÇERİĞİ (DEMO) -->
+  <div id="tab-mods" class="tab-content">
+    <div class="welcome">
+      <h1>🛠️ <span class="highlight">Mods</span></h1>
+      <p>Modlar yakında eklenecek. (Demo Modu)</p>
+    </div>
+    <div class="empty-state" style="margin-top: 40px;">
+      <div class="icon">🚧</div>
+      <p>Mod bölümü şu anda geliştirme aşamasındadır.</p>
+      <button class="btn" onclick="showToast('🚧 Demo modu: Yakında aktif olacak!')">Bilgi Al</button>
+    </div>
+  </div>
 </main>
 
 <input type="file" id="fileInput" multiple />
@@ -527,7 +541,7 @@
       </div>
       <div style="display: flex; gap: 8px;">
         <button class="header-btn" onclick="window.toggleFullScreenGame()" title="Tam Ekran">⛶</button>
-        <button class="header-btn" onclick="window.openGameInNewTab()" title="Yeni Sekmede Aç (Eğer iframe çalışmazsa)">🔗</button>
+        <button class="header-btn" onclick="window.openGameInNewTab()" title="Yeni Sekmede Aç">🔗</button>
         <button class="header-btn" onclick="window.closeGameModal()" title="Kapat">✕</button>
       </div>
     </div>
@@ -538,9 +552,6 @@
 <div class="toast" id="toast">✅ İşlem başarılı!</div>
 
 <script>
-  // ==========================================================
-  // 1. ORTAK DEĞİŞKENLER VE SEKME YÖNETİMİ
-  // ==========================================================
   let currentTab = 'depo';
   let currentFilterDepo = '';
   let currentFilterGame = '';
@@ -555,7 +566,6 @@
   let gameStartTime = 0;
   let currentGameGenre = '';
 
-  // GERÇEK PROFİL İSTATİSTİKLERİ
   let profileStats = JSON.parse(localStorage.getItem('novaProfileStats')) || {
     totalMinutesPlayed: 0,
     genreCounts: {},
@@ -577,7 +587,6 @@
     const mins = profileStats.totalMinutesPlayed % 60;
     document.getElementById('statHours').textContent = mins > 0 ? `${hours} Saat ${mins} Dk` : `${hours} Saat`;
     document.getElementById('statGenre').textContent = maxGenre;
-    
     document.getElementById('statCity').textContent = "İstanbul";
     document.getElementById('statGameCount').textContent = gamesDB.length;
     
@@ -594,12 +603,10 @@
     profileStats.totalMinutesPlayed += minutes;
     profileStats.genreCounts[genre] = (profileStats.genreCounts[genre] || 0) + 1;
     profileStats.xp += 50;
-    
     if (profileStats.xp >= profileStats.level * 350) {
       profileStats.level++;
       showToast(`🎉 Tebrikler! Seviye ${profileStats.level} oldun!`);
     }
-    
     localStorage.setItem('novaProfileStats', JSON.stringify(profileStats));
     updateProfileUI();
   }
@@ -619,7 +626,7 @@
       document.querySelector('.nav-tab[onclick="switchTab(\'oyun\')"]').classList.add('active');
       document.getElementById('tab-oyun').classList.add('active');
       document.getElementById('searchInput').placeholder = "Oyun, tür veya etiket ara...";
-      document.getElementById('welcomeText').textContent = "Yeni maceralara hazır mısın? Kütüphanenden bir oyun seç veya rastgele bir maceraya atıl.";
+      document.getElementById('welcomeText').textContent = "Yeni maceralara hazır mısın? Kütüphanenden bir oyun seç.";
       updateProfileUI();
       renderGames();
     } else if (tab === 'indir') {
@@ -628,6 +635,11 @@
       document.getElementById('searchInput').placeholder = "İndirilecek oyun ara...";
       document.getElementById('welcomeText').textContent = "Platform dışı oyunları indirip cihazında saklayabilirsin.";
       renderDownloads();
+    } else if (tab === 'mods') {
+      document.querySelector('.nav-tab[onclick="switchTab(\'mods\')"]').classList.add('active');
+      document.getElementById('tab-mods').classList.add('active');
+      document.getElementById('searchInput').placeholder = "Mod ara...";
+      document.getElementById('welcomeText').textContent = "Modlar yakında eklenecek. (Demo Modu)";
     }
     document.getElementById('searchInput').value = '';
     currentFilterDepo = '';
@@ -647,9 +659,6 @@
     toast._t = setTimeout(() => toast.className = 'toast', 3000);
   }
 
-  // ==========================================================
-  // 2. DEPO MODÜLÜ (IndexedDB)
-  // ==========================================================
   const DB_NAME = 'NovaDepoDB';
   const STORE_NAME = 'files';
   const MAX_STORAGE = 10 * 1024 * 1024 * 1024;
@@ -659,9 +668,7 @@
       const request = indexedDB.open(DB_NAME, 1);
       request.onupgradeneeded = (e) => {
         const db = e.target.result;
-        if (!db.objectStoreNames.contains(STORE_NAME)) {
-          db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-        }
+        if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME, { keyPath: 'id' });
       };
       request.onsuccess = (e) => resolve(e.target.result);
       request.onerror = (e) => reject(e.target.error);
@@ -723,10 +730,9 @@
   function formatBytes(bytes, decimals = 2) {
     if (bytes === 0) return '0 B';
     const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
     const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + ' ' + sizes[i];
   }
 
   function getFileIcon(type, name, isFolder) {
@@ -742,7 +748,6 @@
   async function refreshAll() {
     const allFiles = await dbGetAll();
     let filtered = allFiles.filter(f => f.name.toLowerCase().includes(currentFilterDepo.toLowerCase()));
-    
     filtered.sort((a, b) => {
       if (a.isFolder && !b.isFolder) return -1;
       if (!a.isFolder && b.isFolder) return 1;
@@ -756,19 +761,12 @@
     document.getElementById('progressFill').style.width = `${percent}%`;
     document.getElementById('storagePercent').textContent = `%${Math.round(percent)}`;
     document.getElementById('storageRing').style.background = `conic-gradient(var(--primary) 0% ${percent}%, rgba(255,255,255,0.1) ${percent}% 100%)`;
-
     document.getElementById('clearSearch').style.display = currentFilterDepo ? 'block' : 'none';
 
     const grid = document.getElementById('fileGrid');
     grid.innerHTML = '';
-    
     if (filtered.length === 0) {
-      grid.innerHTML = `
-        <div class="empty-state">
-          <div class="icon">🌌</div>
-          <p>Burada hiçbir şey yok. Evreni doldurmaya başla!</p>
-          <button class="btn" onclick="document.getElementById('fileInput').click()">📤 İlk Dosyanı Yükle</button>
-        </div>`;
+      grid.innerHTML = `<div class="empty-state"><div class="icon">🌌</div><p>Burada hiçbir şey yok.</p><button class="btn" onclick="document.getElementById('fileInput').click()">📤 İlk Dosyanı Yükle</button></div>`;
       return;
     }
 
@@ -785,34 +783,24 @@
         <div class="file-name">${file.name}</div>
         <div class="file-meta">${file.isFolder ? 'Klasör' : formatBytes(file.size)} • ${file.date}</div>
       `;
-      
       card.addEventListener('click', async (e) => {
         if (e.target.closest('.action-btns')) return;
-        if (file.isFolder) {
-          showToast(`📁 "${file.name}" klasörü seçildi.`);
-          return;
-        }
-        if (!file.blob) {
-          showToast('⚠️ Bu örnek dosyanın içeriği yoktur, sadece demo amaçlıdır.', true);
-          return;
-        }
+        if (file.isFolder) { showToast(`📁 "${file.name}" klasörü seçildi.`); return; }
+        if (!file.blob) { showToast('⚠️ Bu örnek dosyanın içeriği yoktur.', true); return; }
 
         if (file.type.includes('image') || file.name.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
           currentPreviewUrl = URL.createObjectURL(file.blob);
           document.getElementById('previewImage').src = currentPreviewUrl;
           document.getElementById('previewName').textContent = file.name;
           document.getElementById('downloadFromPreview').onclick = () => {
-            const a = document.createElement('a');
-            a.href = currentPreviewUrl;
-            a.download = file.name;
+            const a = document.createElement('a'); a.href = currentPreviewUrl; a.download = file.name;
             document.body.appendChild(a); a.click(); document.body.removeChild(a);
           };
           showModal('previewModal');
         } else {
           showToast('⏳ Dosya indiriliyor...');
           const url = URL.createObjectURL(file.blob);
-          const a = document.createElement('a');
-          a.href = url; a.download = file.name;
+          const a = document.createElement('a'); a.href = url; a.download = file.name;
           document.body.appendChild(a); a.click(); document.body.removeChild(a);
           setTimeout(() => URL.revokeObjectURL(url), 1000);
           showToast('✅ İndirme başladı!');
@@ -825,11 +813,9 @@
       btn.addEventListener('click', async (e) => {
         e.stopPropagation();
         if (confirm('Bu öğeyi kalıcı olarak silmek istediğinize emin misiniz?')) {
-          try {
-            await dbDelete(btn.dataset.id);
-            showToast('🗑️ Öğe silindi ve alan geri kazanıldı.');
-            refreshAll();
-          } catch (err) { showToast('⚠️ Silme başarısız!', true); }
+          await dbDelete(btn.dataset.id);
+          showToast('🗑️ Öğe silindi.');
+          refreshAll();
         }
       });
     });
@@ -850,19 +836,13 @@
 
   const fileInput = document.getElementById('fileInput');
   document.getElementById('btnUpload').addEventListener('click', () => fileInput.click());
-  
   fileInput.addEventListener('change', async (e) => {
     const newFiles = Array.from(e.target.files);
     if (newFiles.length === 0) return;
     document.getElementById('loadingOverlay').classList.add('active');
-    document.getElementById('loadingText').textContent = "Dosyalar depolanıyor...";
     try {
       for (const file of newFiles) {
-        await dbAdd({
-          id: Date.now() + Math.random().toString(36).substr(2, 9),
-          name: file.name, type: file.type || 'unknown', size: file.size,
-          date: new Date().toLocaleDateString('tr-TR'), isFolder: false, blob: file
-        });
+        await dbAdd({ id: Date.now() + Math.random().toString(36).substr(2, 9), name: file.name, type: file.type || 'unknown', size: file.size, date: new Date().toLocaleDateString('tr-TR'), isFolder: false, blob: file });
       }
       showToast(`✅ ${newFiles.length} dosya depolandı!`);
       fileInput.value = '';
@@ -886,14 +866,9 @@
     const newFiles = Array.from(e.dataTransfer.files);
     if (newFiles.length > 0) {
       document.getElementById('loadingOverlay').classList.add('active');
-      document.getElementById('loadingText').textContent = "Dosyalar sürüklenip bırakıldı...";
       try {
         for (const file of newFiles) {
-          await dbAdd({
-            id: Date.now() + Math.random().toString(36).substr(2, 9),
-            name: file.name, type: file.type || 'unknown', size: file.size,
-            date: new Date().toLocaleDateString('tr-TR'), isFolder: false, blob: file
-          });
+          await dbAdd({ id: Date.now() + Math.random().toString(36).substr(2, 9), name: file.name, type: file.type || 'unknown', size: file.size, date: new Date().toLocaleDateString('tr-TR'), isFolder: false, blob: file });
         }
         showToast(`✅ ${newFiles.length} dosya depolandı!`);
         await refreshAll();
@@ -912,9 +887,7 @@
     const name = document.getElementById('folderNameInput').value.trim();
     if (!name) { showToast('⚠️ Lütfen bir isim girin', true); return; }
     const allFiles = await dbGetAll();
-    if (allFiles.some(f => f.name.toLowerCase() === name.toLowerCase())) {
-      showToast('⚠️ Bu isimde bir öğe zaten var!', true); return;
-    }
+    if (allFiles.some(f => f.name.toLowerCase() === name.toLowerCase())) { showToast('⚠️ Bu isimde bir öğe zaten var!', true); return; }
     await dbAdd({ id: Date.now().toString(), name: name, type: 'folder', size: 0, date: new Date().toLocaleDateString('tr-TR'), isFolder: true });
     closeModal('folderModal');
     showToast('📁 Klasör oluşturuldu!');
@@ -925,15 +898,13 @@
     const newName = document.getElementById('renameInput').value.trim();
     if (!newName) { showToast('⚠️ İsim boş olamaz', true); return; }
     const allFiles = await dbGetAll();
-    if (allFiles.some(f => f.id !== currentRenameId && f.name.toLowerCase() === newName.toLowerCase())) {
-      showToast('⚠️ Bu isimde bir öğe zaten var!', true); return;
-    }
+    if (allFiles.some(f => f.id !== currentRenameId && f.name.toLowerCase() === newName.toLowerCase())) { showToast('⚠️ Bu isimde bir öğe zaten var!', true); return; }
     const file = allFiles.find(f => f.id === currentRenameId);
     if (file) {
       file.name = newName;
       await dbAdd(file);
       closeModal('renameModal');
-      showToast('✏️ İsim başarıyla değiştirildi!');
+      showToast('✏️ İsim değiştirildi!');
       refreshAll();
     }
   });
@@ -946,24 +917,19 @@
 
   document.getElementById('btnClear').addEventListener('click', async () => {
     if (confirm('DİKKAT: Tüm dosya ve klasörler kalıcı olarak silinecek. Onaylıyor musunuz?')) {
-      try {
-        await dbClear();
-        showToast('🗑️ Depolama alanı tamamen temizlendi.');
-        refreshAll();
-      } catch (err) { showToast('⚠️ Temizleme başarısız!', true); }
+      await dbClear();
+      showToast('🗑️ Depolama alanı temizlendi.');
+      refreshAll();
     }
   });
 
-  // ==========================================================
-  // 3. OYUN MODÜLÜ
-  // ==========================================================
   const gamesDB = [
     { id: 1, title: "G3Craft", genre: "Sandbox", rating: "4.9", players: "50K", icon: "⛏️", color: "linear-gradient(135deg, #10b981, #047857)", type: "external", url: "https://gizlioyuncu3.github.io/G3Craft" },
     { id: 2, title: "ValoStrike", genre: "FPS", rating: "4.7", players: "120K", icon: "🔫", color: "linear-gradient(135deg, #ef4444, #b91c1c)", type: "external", url: "https://gizlioyuncu3.github.io/ValoStrike" },
     { id: 3, title: "Sans Fight", genre: "RPG", rating: "5.0", players: "200K", icon: "💀", color: "linear-gradient(135deg, #fbbf24, #d97706)", type: "external", url: "https://neonixia.github.io/sans/" },
     { id: 4, title: "Half-Life 2", genre: "FPS", rating: "4.9", players: "85K", icon: "🧲", color: "linear-gradient(135deg, #f59e0b, #b45309)", type: "external", url: "https://hl2.slqnt.dev" },
     { id: 5, title: "Slow Roads", genre: "Simülasyon", rating: "4.6", players: "30K", icon: "🚗", color: "linear-gradient(135deg, #06b6d4, #0891b2)", type: "external", url: "https://slowroads.io" },
-    { id: 6, title: "Aim Antrenmanı", genre: "FPS", rating: "4.8", players: "15K", icon: "🎯", color: "linear-gradient(135deg, #8b5cf6, #6d28d9)", type: "internal", gameId: "aim" },
+    { id: 6, title: "Eğim Antrenmanı", genre: "FPS", rating: "4.8", players: "15K", icon: "🎯", color: "linear-gradient(135deg, #8b5cf6, #6d28d9)", type: "internal", gameId: "aim" },
     { id: 7, title: "Super Mario Bros", genre: "Platform", rating: "4.9", players: "500K", icon: "🍄", color: "linear-gradient(135deg, #ef4444, #dc2626)", type: "external", url: "https://jcw87.github.io/c2-smb1/" },
     { id: 8, title: "Eaglercraft 1.8.8", genre: "Sandbox", rating: "4.8", players: "300K", icon: "🟩", color: "linear-gradient(135deg, #22c55e, #15803d)", type: "external", url: "https://eaglercraft.com/" },
     { id: 9, title: "Five Nights at Freddy's", genre: "Korku", rating: "4.9", players: "150K", icon: "🐻", color: "linear-gradient(135deg, #1e293b, #0f172a)", type: "external", url: "https://dorukyum.github.io/FNAF-Web/" },
@@ -975,10 +941,8 @@
   function renderGames() {
     const grid = document.getElementById('gameGrid');
     grid.innerHTML = '';
-
     let filteredGames = gamesDB.filter(game => {
-      const matchesSearch = game.title.toLowerCase().includes(currentFilterGame.toLowerCase()) || 
-                            game.genre.toLowerCase().includes(currentFilterGame.toLowerCase());
+      const matchesSearch = game.title.toLowerCase().includes(currentFilterGame.toLowerCase()) || game.genre.toLowerCase().includes(currentFilterGame.toLowerCase());
       if (currentSortGame === 'fav') return matchesSearch && favorites.includes(game.id);
       if (currentSortGame === 'top') return matchesSearch && parseFloat(game.players) >= 10;
       if (currentSortGame === 'action') return matchesSearch && (game.genre === 'Aksiyon' || game.genre === 'FPS');
@@ -986,9 +950,8 @@
     });
 
     document.getElementById('clearSearch').style.display = currentFilterGame ? 'block' : 'none';
-
     if (filteredGames.length === 0) {
-      grid.innerHTML = `<div class="empty-state"><div class="icon">🌌</div><p>Bu kriterlere uygun oyun bulunamadı.</p></div>`;
+      grid.innerHTML = `<div class="empty-state"><div class="icon">🌌</div><p>Oyun bulunamadı.</p></div>`;
       return;
     }
 
@@ -998,7 +961,7 @@
       card.className = 'game-card';
       card.innerHTML = `
         <div class="game-cover" style="background: ${game.color};">
-          <span style="z-index: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); font-size: 50px;">${game.icon}</span>
+          <span style="z-index: 1; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.5)); font-size: 55px; background: rgba(255,255,255,0.05); border-radius: 16px; padding: 12px; border: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; width: 74px; height: 74px; margin: 0 auto;">${game.icon}</span>
         </div>
         <div class="game-info">
           <span class="game-badge">${game.genre}</span>
@@ -1009,9 +972,7 @@
           </div>
           <div style="margin-top: 12px; display: flex; gap: 8px;">
             <button class="action-btn" style="flex: 1; padding: 8px; font-size: 13px; background: var(--primary); border-color: var(--primary);" onclick="window.launchGame(${game.id}, event)">▶ Oyna</button>
-            <button class="action-btn" style="flex: 0 0 40px; padding: 8px; font-size: 14px;" onclick="window.toggleFav(${game.id}, event)">
-              ${isFav ? '⭐' : '☆'}
-            </button>
+            <button class="action-btn" style="flex: 0 0 40px; padding: 8px; font-size: 14px;" onclick="window.toggleFav(${game.id}, event)">${isFav ? '⭐' : '☆'}</button>
           </div>
         </div>
       `;
@@ -1035,10 +996,7 @@
   window.launchGame = function(id, event) {
     if (event) event.stopPropagation();
     const game = gamesDB.find(g => g.id === id);
-    if (!game) {
-      showToast('⚠️ Oyun bulunamadı!', true);
-      return;
-    }
+    if (!game) { showToast('⚠️ Oyun bulunamadı!', true); return; }
     
     currentGameUrl = game.url || '';
     gameStartTime = Date.now();
@@ -1048,25 +1006,13 @@
     document.getElementById('modalGameIcon').textContent = game.icon;
     const container = document.getElementById('gameFrameContainer');
 
-    if (internalGameLoop) {
-      cancelAnimationFrame(internalGameLoop);
-      internalGameLoop = null;
-    }
-    if (window.cancelAimAnimation) {
-      window.cancelAimAnimation();
-    }
+    if (internalGameLoop) { cancelAnimationFrame(internalGameLoop); internalGameLoop = null; }
+    if (window.cancelAimAnimation) { window.cancelAimAnimation(); }
     container.innerHTML = '';
 
     if (game.type === 'external' && game.url) {
-      const allowAttrs = "fullscreen; pointer-lock; microphone; camera; autoplay; gamepad; clipboard-read; clipboard-write; xr-spatial-tracking; display-capture";
-      const sandboxAttrs = "allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock allow-top-navigation allow-downloads allow-modals allow-presentation";
-      
       container.innerHTML = `
-        <iframe id="gameIframe" src="${game.url}" 
-          allow="${allowAttrs}" 
-          sandbox="${sandboxAttrs}"
-          style="width: 100%; height: 100%; border: none; background: #000;">
-        </iframe>
+        <iframe id="gameIframe" src="${game.url}" allow="fullscreen; pointer-lock; microphone; camera; autoplay; gamepad; clipboard-read; clipboard-write; xr-spatial-tracking; display-capture" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock allow-top-navigation allow-downloads allow-modals allow-presentation" style="width: 100%; height: 100%; border: none; background: #000;"></iframe>
         <div style="position:absolute; bottom:15px; right:15px; background:rgba(0,0,0,0.85); color:white; padding:10px 16px; border-radius:10px; font-size:13px; pointer-events:none; opacity:0.95; z-index:5; border: 1px solid rgba(255,255,255,0.15); max-width: 320px; text-align: right; backdrop-filter: blur(4px);">
           💡 <b>Not:</b> Bazı oyunlar güvenlik nedeniyle iframe'de engellenebilir. Yüklenmezse sağ üstteki 🔗 butonuna tıklayın.
         </div>
@@ -1074,48 +1020,31 @@
     } else if (game.gameId === 'aim') {
       startAimTrainer(container);
     }
-    
     showModal('gameModal');
   };
 
   window.toggleFullScreenGame = function() {
     const container = document.getElementById('gameFrameContainer');
     const iframe = container.querySelector('iframe');
-    
     if (!document.fullscreenElement) {
-      if (iframe && iframe.requestFullscreen) {
-        iframe.requestFullscreen().catch(() => {
-          if (container.requestFullscreen) container.requestFullscreen();
-        });
-      } else if (container && container.requestFullscreen) {
-        container.requestFullscreen();
-      }
+      if (iframe && iframe.requestFullscreen) iframe.requestFullscreen().catch(() => { if (container.requestFullscreen) container.requestFullscreen(); });
+      else if (container && container.requestFullscreen) container.requestFullscreen();
     } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      }
+      if (document.exitFullscreen) document.exitFullscreen();
     }
   };
 
   window.openGameInNewTab = function() {
-    if (currentGameUrl) {
-      window.open(currentGameUrl, '_blank');
-    } else {
-      showToast('⚠️ Bu oyunun harici bağlantısı yok.', true);
-    }
+    if (currentGameUrl) window.open(currentGameUrl, '_blank');
+    else showToast('⚠️ Bu oyunun harici bağlantısı yok.', true);
   };
 
   function startAimTrainer(container) {
-    let score = 0;
-    let timeLeft = 30;
-    let targets = [];
-    let animationId = null;
-    let lastTime = 0;
-
+    let score = 0, timeLeft = 30, targets = [], animationId = null, lastTime = 0;
     container.innerHTML = `
       <canvas id="aimCanvas"></canvas>
       <div id="aimOverlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.85); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10;">
-        <h2 style="color:white; font-size:28px; margin-bottom:10px;">🎯 Aim Antrenmanı</h2>
+        <h2 style="color:white; font-size:28px; margin-bottom:10px;">🎯 Eğim Antrenmanı</h2>
         <p style="color:var(--muted); margin-bottom:20px;">Hedeflere olabildiğince hızlı tıkla!</p>
         <button class="btn-modal" style="width:auto; padding:12px 32px;" id="startAimBtn">Başla</button>
       </div>
@@ -1124,47 +1053,31 @@
         <span>Süre: <span id="aimTime">30</span>s</span>
       </div>
     `;
-
     const canvas = document.getElementById('aimCanvas');
     const ctx = canvas.getContext('2d');
-    
-    const resizeCanvas = () => {
-      canvas.width = container.clientWidth;
-      canvas.height = container.clientHeight;
-    };
+    const resizeCanvas = () => { canvas.width = container.clientWidth; canvas.height = container.clientHeight; };
     resizeCanvas();
     
     document.getElementById('startAimBtn').onclick = () => {
       resizeCanvas();
       document.getElementById('aimOverlay').style.display = 'none';
       document.getElementById('aimHud').style.display = 'flex';
-      score = 0;
-      timeLeft = 30;
-      targets = [];
-      lastTime = 0;
+      score = 0; timeLeft = 30; targets = []; lastTime = 0;
       spawnTarget();
       animationId = requestAnimationFrame(gameLoop);
     };
 
     function spawnTarget() {
       const radius = 25 + Math.random() * 15;
-      targets.push({
-        x: radius + Math.random() * (canvas.width - radius * 2),
-        y: radius + Math.random() * (canvas.height - radius * 2),
-        maxRadius: radius,
-        life: 2.0
-      });
+      targets.push({ x: radius + Math.random() * (canvas.width - radius * 2), y: radius + Math.random() * (canvas.height - radius * 2), maxRadius: radius, life: 2.0 });
     }
 
     canvas.addEventListener('mousedown', (e) => {
       const rect = canvas.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-      const clickY = e.clientY - rect.top;
-
+      const clickX = e.clientX - rect.left, clickY = e.clientY - rect.top;
       for (let i = targets.length - 1; i >= 0; i--) {
         const t = targets[i];
-        const dist = Math.sqrt((clickX - t.x)**2 + (clickY - t.y)**2);
-        if (dist < t.maxRadius) {
+        if (Math.sqrt((clickX - t.x)**2 + (clickY - t.y)**2) < t.maxRadius) {
           score += 10;
           document.getElementById('aimScore').textContent = score;
           targets.splice(i, 1);
@@ -1185,20 +1098,13 @@
         document.getElementById('aimTime').textContent = Math.max(0, Math.ceil(timeLeft));
       } else {
         animationId = null;
-        document.getElementById('aimOverlay').innerHTML = `
-          <h2 style="color:white; font-size:28px; margin-bottom:10px;">Süre Doldu!</h2>
-          <p style="color:var(--accent); font-size:24px; font-weight:bold; margin-bottom:20px;">Toplam Skor: ${score}</p>
-          <button class="btn-modal" style="width:auto; padding:12px 32px;" id="restartAimBtn">Tekrar Oyna</button>
-        `;
+        document.getElementById('aimOverlay').innerHTML = `<h2 style="color:white; font-size:28px; margin-bottom:10px;">Süre Doldu!</h2><p style="color:var(--accent); font-size:24px; font-weight:bold; margin-bottom:20px;">Toplam Skor: ${score}</p><button class="btn-modal" style="width:auto; padding:12px 32px;" id="restartAimBtn">Tekrar Oyna</button>`;
         document.getElementById('aimOverlay').style.display = 'flex';
         document.getElementById('aimHud').style.display = 'none';
         document.getElementById('restartAimBtn').onclick = () => {
           document.getElementById('aimOverlay').style.display = 'none';
           document.getElementById('aimHud').style.display = 'flex';
-          score = 0;
-          timeLeft = 30;
-          targets = [];
-          lastTime = 0;
+          score = 0; timeLeft = 30; targets = []; lastTime = 0;
           document.getElementById('aimScore').textContent = score;
           spawnTarget();
           animationId = requestAnimationFrame(gameLoop);
@@ -1207,62 +1113,35 @@
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
       targets.forEach(t => {
         t.life -= deltaTime;
         if (t.life > 0) {
           const scale = t.life / 2.0;
           const currentRadius = t.maxRadius * scale;
-          
-          ctx.beginPath();
-          ctx.arc(t.x, t.y, currentRadius, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(239, 68, 68, ${scale})`;
-          ctx.fill();
-          ctx.strokeStyle = 'white';
-          ctx.lineWidth = 2;
-          ctx.stroke();
-          
-          ctx.beginPath();
-          ctx.arc(t.x, t.y, currentRadius * 0.4, 0, Math.PI * 2);
-          ctx.fillStyle = 'white';
-          ctx.fill();
+          ctx.beginPath(); ctx.arc(t.x, t.y, currentRadius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(239, 68, 68, ${scale})`; ctx.fill();
+          ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.stroke();
+          ctx.beginPath(); ctx.arc(t.x, t.y, currentRadius * 0.4, 0, Math.PI * 2);
+          ctx.fillStyle = 'white'; ctx.fill();
         }
       });
-      
       targets = targets.filter(t => t.life > 0);
       if (targets.length === 0) spawnTarget();
-
       animationId = requestAnimationFrame(gameLoop);
     }
-
-    window.cancelAimAnimation = () => { 
-      if(animationId) cancelAnimationFrame(animationId); 
-      animationId = null; 
-    };
+    window.cancelAimAnimation = () => { if(animationId) cancelAnimationFrame(animationId); animationId = null; };
   }
 
   window.closeGameModal = function() {
     closeModal('gameModal');
     currentGameUrl = '';
-    
-    if (internalGameLoop) {
-      cancelAnimationFrame(internalGameLoop);
-      internalGameLoop = null;
-    }
-    if (window.cancelAimAnimation) {
-      window.cancelAimAnimation();
-    }
-    
+    if (internalGameLoop) { cancelAnimationFrame(internalGameLoop); internalGameLoop = null; }
+    if (window.cancelAimAnimation) { window.cancelAimAnimation(); }
     if (gameStartTime > 0) {
-      const minutesPlayed = Math.max(1, Math.round((Date.now() - gameStartTime) / 60000));
-      addGameSession(currentGameGenre, minutesPlayed);
+      addGameSession(currentGameGenre, Math.max(1, Math.round((Date.now() - gameStartTime) / 60000)));
       gameStartTime = 0;
     }
-    
-    setTimeout(() => {
-      const container = document.getElementById('gameFrameContainer');
-      if (container) container.innerHTML = '';
-    }, 300);
+    setTimeout(() => { const container = document.getElementById('gameFrameContainer'); if (container) container.innerHTML = ''; }, 300);
   };
 
   document.getElementById('btnRandom').addEventListener('click', () => {
@@ -1270,31 +1149,10 @@
     showToast(`🎲 Rastgele seçilen: ${randomGame.title}`);
     setTimeout(() => window.launchGame(randomGame.id), 500);
   });
+  document.getElementById('btnTop').addEventListener('click', () => { currentSortGame = 'top'; currentFilterGame = ''; document.getElementById('searchInput').value = ''; renderGames(); showToast('🏆 En çok oynananlar listelendi.'); });
+  document.getElementById('btnFav').addEventListener('click', () => { currentSortGame = 'fav'; currentFilterGame = ''; document.getElementById('searchInput').value = ''; renderGames(); showToast('⭐ Favori oyunların gösteriliyor.'); });
+  document.getElementById('btnAction').addEventListener('click', () => { currentSortGame = 'action'; currentFilterGame = ''; document.getElementById('searchInput').value = ''; renderGames(); showToast('⚔️ Sadece Aksiyon/FPS oyunları gösteriliyor.'); });
 
-  document.getElementById('btnTop').addEventListener('click', () => {
-    currentSortGame = 'top'; currentFilterGame = '';
-    document.getElementById('searchInput').value = '';
-    renderGames();
-    showToast('🏆 En çok oynananlar listelendi.');
-  });
-
-  document.getElementById('btnFav').addEventListener('click', () => {
-    currentSortGame = 'fav'; currentFilterGame = '';
-    document.getElementById('searchInput').value = '';
-    renderGames();
-    showToast('⭐ Favori oyunların gösteriliyor.');
-  });
-
-  document.getElementById('btnAction').addEventListener('click', () => {
-    currentSortGame = 'action'; currentFilterGame = '';
-    document.getElementById('searchInput').value = '';
-    renderGames();
-    showToast('⚔️ Sadece Aksiyon/FPS oyunları gösteriliyor.');
-  });
-
-  // ==========================================================
-  // 4. İNDİRME MODÜLÜ
-  // ==========================================================
   const downloadGamesDB = [
     { id: 101, title: "Cyber Odyssey", size: "45 GB", icon: "🤖", color: "linear-gradient(135deg, #06b6d4, #3b82f6)" },
     { id: 102, title: "Forest Survivor", size: "12 GB", icon: "🌲", color: "linear-gradient(135deg, #22c55e, #15803d)" },
@@ -1306,13 +1164,15 @@
     { id: 108, title: "GTAV", size: "60 GB", icon: "🚗", color: "linear-gradient(135deg, #ef4444, #b91c1c)", url: "https://mega.nz/file/ouNSVSZK#JeYC12gvqjFGL51P7gZGjmqNxABP0XxYuLnVfpZ_h3E", isTorrent: true },
     { id: 109, title: "BEAMNG.DRIVE", size: "25 GB", icon: "🚙", color: "linear-gradient(135deg, #f97316, #ea580c)", url: "https://mega.nz/file/cmNkzaBR#QJhRLV58Fu5kF4BKfvzV6CU8qNa1VbqzvSdzkcjxuQo" },
     { id: 110, title: "Drone Simulator", size: "15 GB", icon: "🚁", color: "linear-gradient(135deg, #3b82f6, #1d4ed8)", url: "https://mega.nz/file/Mncn0QTa#TvbrZMH3wOnesh4-jWNfYFG272Xx6WPrG5b6ESMLDww" },
-    { id: 111, title: "Forza Horizon 6", size: "80 GB", icon: "🏎️", color: "linear-gradient(135deg, #f97316, #ea580c)", url: "https://mega.nz/file/U38B0KJB#xoULFvKam927gVIwmToUFj6kwXgQlw_TUKJ-MLvwivM" }
+    { id: 111, title: "Forza Horizon 6", size: "80 GB", icon: "🏎️", color: "linear-gradient(135deg, #f97316, #ea580c)", url: "https://mega.nz/file/U38B0KJB#xoULFvKam927gVIwmToUFj6kwXgQlw_TUKJ-MLvwivM" },
+    { id: 112, title: "Bilinmeyen Oyun 1", size: "40 GB", icon: "🎮", color: "linear-gradient(135deg, #8b5cf6, #6d28d9)", url: "https://mega.nz/file/di10ybpS#lIXcIeIxtIsmEWLosKPHZtiQSzBJvgXHh7JNZLqDWKA", isTorrent: true },
+    { id: 113, title: "Bilinmeyen Oyun 2", size: "35 GB", icon: "🎮", color: "linear-gradient(135deg, #10b981, #047857)", url: "https://mega.nz/file/lrsy0ZpB#yUWS1zdnzMjWV8i7bjcadEZOm1A8f4_Odffv8Uu83ao", isTorrent: true },
+    { id: 114, title: "Human Fall Flat", size: "5 GB", icon: "🧍", color: "linear-gradient(135deg, #f59e0b, #d97706)", url: "https://mega.nz/file/Rz0U0DpR#XE9-zt2uItfFNwLURMgudqytQFlvz4u-pbSrVKNCMcI", isTorrent: true }
   ];
 
   function renderDownloads() {
     const grid = document.getElementById('downloadGrid');
     grid.innerHTML = '';
-    
     const filtered = downloadGamesDB.filter(g => g.title.toLowerCase().includes(currentFilterDownload.toLowerCase()));
     
     if (filtered.length === 0) {
@@ -1323,7 +1183,6 @@
     filtered.forEach(game => {
       const card = document.createElement('div');
       card.className = 'game-card';
-      
       const hasLink = !!game.url;
       const btnStyle = hasLink ? "background: #0070f1; border-color: #0070f1;" : "background: var(--success); border-color: var(--success);";
       const btnText = hasLink ? "⬇️ MEGA İLE İNDİR" : "⬇️ İNDİR";
@@ -1331,10 +1190,9 @@
       const badgeColor = hasLink ? "#0070f1" : "var(--success)";
       const clickAction = hasLink ? `window.open('${game.url}', '_blank')` : `window.simulateDownload('${game.title}')`;
 
-      // İkon bir URL ise <img> etiketi, değilse emoji olarak render et
       const iconHtml = game.icon.startsWith('http') 
-        ? `<img src="${game.icon}" alt="${game.title}" style="width: 80px; height: 80px; object-fit: contain; z-index: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); border-radius: 8px;" />`
-        : `<span style="z-index: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); font-size: 50px;">${game.icon}</span>`;
+        ? `<img src="${game.icon}" alt="${game.title}" style="width: 70px; height: 70px; object-fit: contain; z-index: 1; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.5)); border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.2);" />`
+        : `<span style="z-index: 1; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.5)); font-size: 50px; background: rgba(255,255,255,0.05); border-radius: 16px; padding: 12px; border: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; width: 74px; height: 74px; margin: 0 auto;">${game.icon}</span>`;
 
       card.innerHTML = `
         <div class="game-cover" style="background: ${game.color};">
@@ -1357,50 +1215,29 @@
   }
 
   window.simulateDownload = function(gameTitle) {
-    showToast(`⏳ Demo: "${gameTitle}" indirme kuyruğuna eklendi! (Gerçek indirme için backend gerekli)`);
+    showToast(`⏳ Demo: "${gameTitle}" indirme kuyruğuna eklendi!`);
   };
 
-  // ==========================================================
-  // 5. ORTAK ETKİLEŞİM VE OTURUM YÖNETİMİ
-  // ==========================================================
   document.getElementById('searchInput').addEventListener('input', (e) => {
-    if (currentTab === 'depo') {
-      currentFilterDepo = e.target.value;
-      refreshAll();
-    } else if (currentTab === 'oyun') {
-      currentFilterGame = e.target.value;
-      renderGames();
-    } else if (currentTab === 'indir') {
-      currentFilterDownload = e.target.value;
-      renderDownloads();
-    }
+    if (currentTab === 'depo') { currentFilterDepo = e.target.value; refreshAll(); } 
+    else if (currentTab === 'oyun') { currentFilterGame = e.target.value; renderGames(); } 
+    else if (currentTab === 'indir') { currentFilterDownload = e.target.value; renderDownloads(); }
   });
 
   document.getElementById('clearSearch').addEventListener('click', () => {
     document.getElementById('searchInput').value = '';
-    if (currentTab === 'depo') {
-      currentFilterDepo = '';
-      refreshAll();
-    } else if (currentTab === 'oyun') {
-      currentFilterGame = '';
-      renderGames();
-    } else if (currentTab === 'indir') {
-      currentFilterDownload = '';
-      renderDownloads();
-    }
+    if (currentTab === 'depo') { currentFilterDepo = ''; refreshAll(); } 
+    else if (currentTab === 'oyun') { currentFilterGame = ''; renderGames(); } 
+    else if (currentTab === 'indir') { currentFilterDownload = ''; renderDownloads(); }
   });
 
   document.querySelectorAll('.modal-overlay').forEach(modal => {
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
-        if (modal.id === 'gameModal') {
-          window.closeGameModal();
-        } else {
+        if (modal.id === 'gameModal') window.closeGameModal();
+        else {
           modal.classList.remove('active');
-          if (modal.id === 'previewModal' && currentPreviewUrl) {
-            URL.revokeObjectURL(currentPreviewUrl);
-            currentPreviewUrl = null;
-          }
+          if (modal.id === 'previewModal' && currentPreviewUrl) { URL.revokeObjectURL(currentPreviewUrl); currentPreviewUrl = null; }
         }
       }
     });
@@ -1409,10 +1246,7 @@
   (function guard() {
     let user = null;
     try { user = JSON.parse(localStorage.getItem('novaUser')); } catch (e) { user = null; }
-    if (!user) {
-      window.location.replace('../');
-      return;
-    }
+    if (!user) { window.location.replace('../'); return; }
     const name = user.name || 'Kaptan';
     document.getElementById('avatar').textContent = name.charAt(0).toUpperCase();
     document.getElementById('userName').textContent = name;
@@ -1422,125 +1256,62 @@
 
   document.getElementById('logoutBtn').addEventListener('click', () => {
     localStorage.removeItem('novaUser');
-    showToast('👋 Çıkış yapıldı. Ana sayfaya yönlendiriliyorsunuz...');
-    setTimeout(() => { 
-      window.location.replace('../'); 
-    }, 800);
+    showToast('👋 Çıkış yapıldı.');
+    setTimeout(() => { window.location.replace('../'); }, 800);
   });
 
-  (async () => {
-    await seedDefaults();
-    switchTab('depo');
-  })();
+  (async () => { await seedDefaults(); switchTab('depo'); })();
 
-  // ==========================================================
-  // 6. GALAKSİ ANİMASYONU
-  // ==========================================================
   const canvas = document.getElementById('galaxy-canvas');
   const ctx = canvas.getContext('2d');
   let width, height, cx, cy;
-
-  function resize() {
-    width = canvas.width = window.innerWidth;
-    height = canvas.height = window.innerHeight;
-    cx = width / 2;
-    cy = height / 2;
-  }
-  window.addEventListener('resize', resize);
-  resize();
+  function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; cx = width / 2; cy = height / 2; }
+  window.addEventListener('resize', resize); resize();
 
   const ARMS = 3, PARTICLES_PER_ARM = 600, CORE_PARTICLES = 400;
   const particles = [];
-
   class Star {
-    constructor(isCore = false) {
-      this.isCore = isCore;
-      this.reset();
-    }
+    constructor(isCore = false) { this.isCore = isCore; this.reset(); }
     reset() {
       if (this.isCore) {
-        this.radius = Math.random() * 40;
-        this.angle = Math.random() * Math.PI * 2;
-        this.size = Math.random() * 1.5 + 0.5;
-        this.color = `hsl(${Math.random() * 60 + 30}, 100%, ${Math.random() * 30 + 70}%)`;
-        this.speed = 0.02 + Math.random() * 0.03;
+        this.radius = Math.random() * 40; this.angle = Math.random() * Math.PI * 2; this.size = Math.random() * 1.5 + 0.5;
+        this.color = `hsl(${Math.random() * 60 + 30}, 100%, ${Math.random() * 30 + 70}%)`; this.speed = 0.02 + Math.random() * 0.03;
       } else {
-        const arm = Math.floor(Math.random() * ARMS);
-        const armAngle = (arm / ARMS) * Math.PI * 2;
+        const arm = Math.floor(Math.random() * ARMS); const armAngle = (arm / ARMS) * Math.PI * 2;
         this.radius = 50 + Math.random() * (Math.min(width, height) * 0.45);
-        const spiralOffset = (this.radius * 0.015); 
-        this.angle = armAngle + spiralOffset + (Math.random() - 0.5) * 0.8;
+        this.angle = armAngle + (this.radius * 0.015) + (Math.random() - 0.5) * 0.8;
         this.size = Math.random() * 1.8 + 0.3;
         const hue = 200 + (this.radius / (Math.min(width, height) * 0.45)) * 100; 
-        this.color = `hsl(${hue}, 80%, ${Math.random() * 30 + 60}%)`;
-        this.speed = 50 / (this.radius * this.radius + 100) + 0.002;
+        this.color = `hsl(${hue}, 80%, ${Math.random() * 30 + 60}%)`; this.speed = 50 / (this.radius * this.radius + 100) + 0.002;
       }
-      this.opacity = Math.random() * 0.5 + 0.5;
-      this.twinkleSpeed = Math.random() * 0.05 + 0.01;
-      this.twinklePhase = Math.random() * Math.PI * 2;
+      this.opacity = Math.random() * 0.5 + 0.5; this.twinkleSpeed = Math.random() * 0.05 + 0.01; this.twinklePhase = Math.random() * Math.PI * 2;
     }
-    update() {
-      this.angle += this.speed;
-      this.twinklePhase += this.twinkleSpeed;
-      this.currentOpacity = this.opacity * (0.7 + 0.3 * Math.sin(this.twinklePhase));
-    }
+    update() { this.angle += this.speed; this.twinklePhase += this.twinkleSpeed; this.currentOpacity = this.opacity * (0.7 + 0.3 * Math.sin(this.twinklePhase)); }
     draw() {
-      const x = cx + Math.cos(this.angle) * this.radius;
-      const y = cy + Math.sin(this.angle) * this.radius * 0.45;
-      const distToCenter = Math.sqrt((x-cx)**2 + (y-cy)**2);
-      const fade = Math.max(0, 1 - distToCenter / (Math.min(width, height) * 0.55));
-
-      ctx.beginPath();
-      ctx.arc(x, y, this.size, 0, Math.PI * 2);
-      ctx.fillStyle = this.color;
-      ctx.globalAlpha = this.currentOpacity * fade;
-      ctx.fill();
-      
-      if (this.isCore && this.size > 1.2) {
-        ctx.beginPath();
-        ctx.arc(x, y, this.size * 3, 0, Math.PI * 2);
-        ctx.fillStyle = this.color;
-        ctx.globalAlpha = 0.1 * fade;
-        ctx.fill();
-      }
+      const x = cx + Math.cos(this.angle) * this.radius, y = cy + Math.sin(this.angle) * this.radius * 0.45;
+      const fade = Math.max(0, 1 - Math.sqrt((x-cx)**2 + (y-cy)**2) / (Math.min(width, height) * 0.55));
+      ctx.beginPath(); ctx.arc(x, y, this.size, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.globalAlpha = this.currentOpacity * fade; ctx.fill();
+      if (this.isCore && this.size > 1.2) { ctx.beginPath(); ctx.arc(x, y, this.size * 3, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.globalAlpha = 0.1 * fade; ctx.fill(); }
       ctx.globalAlpha = 1.0;
     }
   }
-
   for (let i = 0; i < CORE_PARTICLES; i++) particles.push(new Star(true));
   for (let i = 0; i < ARMS * PARTICLES_PER_ARM; i++) particles.push(new Star(false));
 
   let mouseX = cx, mouseY = cy;
   window.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
-
   let time = 0;
   function animate() {
-    ctx.fillStyle = 'rgba(2, 0, 20, 0.25)';
-    ctx.fillRect(0, 0, width, height);
-
+    ctx.fillStyle = 'rgba(2, 0, 20, 0.25)'; ctx.fillRect(0, 0, width, height);
     time += 0.005;
     const glowSize = 120 + Math.sin(time) * 10;
     const gradient = ctx.createRadialGradient(cx, cy, 10, cx, cy, glowSize);
-    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
-    gradient.addColorStop(0.2, 'rgba(139, 92, 246, 0.6)');
-    gradient.addColorStop(0.5, 'rgba(6, 182, 212, 0.2)');
-    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.arc(cx, cy, glowSize, 0, Math.PI * 2);
-    ctx.fill();
-
-    const offsetX = (mouseX - cx) * 0.02;
-    const offsetY = (mouseY - cy) * 0.02;
-    ctx.save();
-    ctx.translate(offsetX, offsetY);
-
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)'); gradient.addColorStop(0.2, 'rgba(139, 92, 246, 0.6)');
+    gradient.addColorStop(0.5, 'rgba(6, 182, 212, 0.2)'); gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = gradient; ctx.beginPath(); ctx.arc(cx, cy, glowSize, 0, Math.PI * 2); ctx.fill();
+    ctx.save(); ctx.translate((mouseX - cx) * 0.02, (mouseY - cy) * 0.02);
     particles.forEach(p => { p.update(); p.draw(); });
-
-    ctx.restore();
-    ctx.globalCompositeOperation = 'source-over';
+    ctx.restore(); ctx.globalCompositeOperation = 'source-over';
     requestAnimationFrame(animate);
   }
   animate();
