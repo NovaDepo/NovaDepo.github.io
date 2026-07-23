@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>NovaPlatform • Depo, Oyun & İndirme</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -332,14 +333,6 @@
     box-shadow: 0 25px 60px rgba(0,0,0,0.8); animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
-  /* Büyütülmüş AI Modal Stili */
-  .ai-modal-box {
-    background: #0f0c29; border: 1px solid var(--card-border);
-    border-radius: 16px; width: 85vw; max-width: 900px; height: 75vh;
-    display: flex; flex-direction: column; overflow: hidden;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.8); animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
   .game-modal-header {
     padding: 16px 24px; border-bottom: 1px solid var(--card-border);
     display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4);
@@ -358,14 +351,96 @@
     width: 100%;
     height: 100%;
   }
+
+  /* ===== YÜZEN AI PANELİ (Opera Aria Tarzı) ===== */
+  .ai-floating-panel {
+    position: fixed;
+    top: 80px;
+    right: 24px;
+    width: 350px;
+    height: 500px;
+    background: rgba(15, 12, 41, 0.95);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    backdrop-filter: blur(12px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 100;
+    transform: translateX(120%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .ai-floating-panel.active {
+    transform: translateX(0);
+  }
+  .ai-floating-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--card-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.2);
+  }
+  .ai-floating-body {
+    flex: 1;
+    position: relative;
+  }
+  .ai-floating-body iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  .ai-toggle-btn {
+    position: fixed;
+    top: 80px;
+    right: 24px;
+    z-index: 99;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border: none;
+    color: white;
+    font-size: 26px;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+  .ai-toggle-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 35px rgba(139, 92, 246, 0.7);
+  }
+  .ai-toggle-btn.hidden {
+    transform: scale(0);
+    opacity: 0;
+    pointer-events: none;
+  }
 </style>
 </head>
 <body>
 
 <canvas id="galaxy-canvas"></canvas>
 
-<!-- Sağ Üst Köşe Sabit AI Butonu -->
-<button class="action-btn" style="position: fixed; top: 80px; right: 24px; z-index: 50; width: 56px; height: 56px; border-radius: 50%; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 26px; box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4);" onclick="window.openAIModal(event)" title="AI Asistan">🤖</button>
+<!-- Yüzen AI Asistan Butonu -->
+<button class="ai-toggle-btn" id="aiToggleBtn" onclick="window.toggleAI()" title="AI Asistan">🤖</button>
+
+<!-- Yüzen AI Paneli -->
+<div class="ai-floating-panel" id="aiPanel">
+  <div class="ai-floating-header">
+    <div style="display: flex; align-items: center; gap: 8px; color: white; font-weight: 700;">
+      <span>🤖</span>
+      <span>G3 AI Asistan</span>
+    </div>
+    <button class="header-btn" style="width: 28px; height: 28px; font-size: 12px;" onclick="window.toggleAI()" title="Kapat">✕</button>
+  </div>
+  <div class="ai-floating-body">
+    <iframe src="https://g3ai.vercel.app" style="width: 100%; height: 100%; border: none; background: #000;"></iframe>
+  </div>
+</div>
 
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner"></div>
@@ -527,22 +602,6 @@
   </div>
 </div>
 
-<!-- Büyütülmüş AI Modal -->
-<div class="modal-overlay" id="aiModal">
-  <div class="ai-modal-box">
-    <div class="game-modal-header" style="padding: 12px 20px;">
-      <div class="game-modal-title" style="font-size: 16px;">
-        <span>🤖</span>
-        <span>G3 AI Asistan</span>
-      </div>
-      <button class="header-btn" style="width: 32px; height: 32px; font-size: 14px;" onclick="closeModal('aiModal')" title="Kapat">✕</button>
-    </div>
-    <div class="game-frame-container">
-      <iframe src="https://g3ai.vercel.app" style="width: 100%; height: 100%; border: none; background: #000;"></iframe>
-    </div>
-  </div>
-</div>
-
 <div class="toast" id="toast">✅ İşlem başarılı!</div>
 
 <script>
@@ -646,6 +705,13 @@
     clearTimeout(toast._t);
     toast._t = setTimeout(() => toast.className = 'toast', 3000);
   }
+
+  window.toggleAI = function() {
+    const panel = document.getElementById('aiPanel');
+    const btn = document.getElementById('aiToggleBtn');
+    panel.classList.toggle('active');
+    btn.classList.toggle('hidden');
+  };
 
   const DB_NAME = 'NovaDepoDB';
   const STORE_NAME = 'files';
@@ -920,7 +986,8 @@
     { id: 6, title: "Eğim Antrenmanı", genre: "FPS", rating: "4.8", players: "15K", icon: "🎯", color: "linear-gradient(135deg, #8b5cf6, #6d28d9)", type: "internal", gameId: "aim" },
     { id: 7, title: "Super Mario Bros", genre: "Platform", rating: "4.9", players: "500K", icon: "🍄", color: "linear-gradient(135deg, #ef4444, #dc2626)", type: "external", url: "https://jcw87.github.io/c2-smb1/" },
     { id: 8, title: "Five Nights at Freddy's", genre: "Korku", rating: "4.9", players: "150K", icon: "🐻", color: "linear-gradient(135deg, #1e293b, #0f172a)", type: "external", url: "https://dorukyum.github.io/FNAF-Web/" },
-    { id: 9, title: "Krunker.io", genre: "FPS", rating: "4.7", players: "1M", icon: "🎯", color: "linear-gradient(135deg, #f97316, #ea580c)", type: "external", url: "https://krunker.io" }
+    { id: 9, title: "Krunker.io", genre: "FPS", rating: "4.7", players: "1M", icon: "🎯", color: "linear-gradient(135deg, #f97316, #ea580c)", type: "external", url: "https://krunker.io" },
+    { id: 10, title: "Nova 3D IO", genre: "3D IO", rating: "4.9", players: "5K", icon: "🧊", color: "linear-gradient(135deg, #8b5cf6, #ec4899)", type: "internal", gameId: "nova3dio" }
   ];
 
   let currentSortGame = 'all';
@@ -995,6 +1062,7 @@
 
     if (internalGameLoop) { cancelAnimationFrame(internalGameLoop); internalGameLoop = null; }
     if (window.cancelAimAnimation) { window.cancelAimAnimation(); }
+    if (typeof window.cancelNova3DIO === 'function') { window.cancelNova3DIO(); }
     container.innerHTML = '';
 
     if (game.type === 'external' && game.url) {
@@ -1006,13 +1074,10 @@
       `;
     } else if (game.gameId === 'aim') {
       startAimTrainer(container);
+    } else if (game.gameId === 'nova3dio') {
+      startNova3DIO(container);
     }
     showModal('gameModal');
-  };
-
-  window.openAIModal = function(event) {
-    if (event) event.stopPropagation();
-    showModal('aiModal');
   };
 
   window.toggleFullScreenGame = function() {
@@ -1124,11 +1189,145 @@
     window.cancelAimAnimation = () => { if(animationId) cancelAnimationFrame(animationId); animationId = null; };
   }
 
+  function startNova3DIO(container) {
+    container.innerHTML = `
+      <div id="nova3dio-ui" style="position: absolute; top: 10px; left: 10px; color: white; font-size: 20px; font-weight: bold; z-index: 10; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
+        Skor: <span id="nova3dio-score">0</span>
+      </div>
+      <div id="nova3dio-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20; color: white;">
+        <h2 style="font-size: 32px; margin-bottom: 10px;">🧊 Nova 3D IO</h2>
+        <p style="margin-bottom: 20px; color: #ccc;">WASD veya Ok Tuşları ile hareket et. Sarı küpleri topla!</p>
+        <button class="btn-modal" style="width: auto; padding: 12px 32px;" id="startNova3DIOBtn">Oyna</button>
+      </div>
+    `;
+    
+    let scene, camera, renderer, player, collectibles = [];
+    let score = 0;
+    let isPlaying = false;
+    let keys = { w: false, a: false, s: false, d: false };
+    let animationId;
+
+    const init = () => {
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0f0c29);
+      
+      camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+      camera.position.set(0, 15, 15);
+      camera.lookAt(0, 0, 0);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      container.appendChild(renderer.domElement);
+
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      scene.add(ambientLight);
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      dirLight.position.set(10, 20, 10);
+      scene.add(dirLight);
+
+      const floorGeometry = new THREE.PlaneGeometry(100, 100);
+      const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x1a1a2e, side: THREE.DoubleSide });
+      const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+      floor.rotation.x = -Math.PI / 2;
+      scene.add(floor);
+
+      const gridHelper = new THREE.GridHelper(100, 50, 0x8b5cf6, 0x2d2d44);
+      scene.add(gridHelper);
+
+      const playerGeometry = new THREE.BoxGeometry(2, 2, 2);
+      const playerMaterial = new THREE.MeshStandardMaterial({ color: 0x06b6d4 });
+      player = new THREE.Mesh(playerGeometry, playerMaterial);
+      player.position.y = 1;
+      scene.add(player);
+
+      for (let i = 0; i < 20; i++) {
+        const geo = new THREE.SphereGeometry(1, 16, 16);
+        const mat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xf59e0b, emissiveIntensity: 0.5 });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set((Math.random() - 0.5) * 80, 1, (Math.random() - 0.5) * 80);
+        scene.add(mesh);
+        collectibles.push(mesh);
+      }
+
+      window.addEventListener('keydown', (e) => {
+        const key = e.key.toLowerCase();
+        if (key === 'w' || key === 'arrowup') keys.w = true;
+        if (key === 'a' || key === 'arrowleft') keys.a = true;
+        if (key === 's' || key === 'arrowdown') keys.s = true;
+        if (key === 'd' || key === 'arrowright') keys.d = true;
+      });
+
+      window.addEventListener('keyup', (e) => {
+        const key = e.key.toLowerCase();
+        if (key === 'w' || key === 'arrowup') keys.w = false;
+        if (key === 'a' || key === 'arrowleft') keys.a = false;
+        if (key === 's' || key === 'arrowdown') keys.s = false;
+        if (key === 'd' || key === 'arrowright') keys.d = false;
+      });
+    };
+
+    const animate = () => {
+      if (!isPlaying) return;
+      animationId = requestAnimationFrame(animate);
+
+      const speed = 0.3;
+      if (keys.w) player.position.z -= speed;
+      if (keys.s) player.position.z += speed;
+      if (keys.a) player.position.x -= speed;
+      if (keys.d) player.position.x += speed;
+
+      camera.position.x = player.position.x;
+      camera.position.z = player.position.z + 15;
+      camera.lookAt(player.position);
+
+      for (let i = collectibles.length - 1; i >= 0; i--) {
+        const c = collectibles[i];
+        c.rotation.y += 0.05;
+        c.position.y = 1 + Math.sin(Date.now() * 0.005 + i) * 0.5;
+
+        const dist = player.position.distanceTo(c.position);
+        if (dist < 2.5) {
+          scene.remove(c);
+          collectibles.splice(i, 1);
+          score += 10;
+          document.getElementById('nova3dio-score').textContent = score;
+          
+          const geo = new THREE.SphereGeometry(1, 16, 16);
+          const mat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xf59e0b, emissiveIntensity: 0.5 });
+          const mesh = new THREE.Mesh(geo, mat);
+          mesh.position.set(player.position.x + (Math.random() - 0.5) * 40, 1, player.position.z + (Math.random() - 0.5) * 40);
+          scene.add(mesh);
+          collectibles.push(mesh);
+        }
+      }
+      renderer.render(scene, camera);
+    };
+
+    document.getElementById('startNova3DIOBtn').onclick = () => {
+      document.getElementById('nova3dio-overlay').style.display = 'none';
+      if (!scene) init();
+      isPlaying = true;
+      animate();
+    };
+
+    window.cancelNova3DIO = () => {
+      isPlaying = false;
+      if (animationId) cancelAnimationFrame(animationId);
+      if (renderer) {
+        renderer.dispose();
+        if (renderer.domElement && renderer.domElement.parentNode) {
+          renderer.domElement.parentNode.removeChild(renderer.domElement);
+        }
+      }
+    };
+  }
+
   window.closeGameModal = function() {
     closeModal('gameModal');
     currentGameUrl = '';
     if (internalGameLoop) { cancelAnimationFrame(internalGameLoop); internalGameLoop = null; }
     if (window.cancelAimAnimation) { window.cancelAimAnimation(); }
+    if (typeof window.cancelNova3DIO === 'function') { window.cancelNova3DIO(); }
     if (gameStartTime > 0) {
       addGameSession(currentGameGenre, Math.max(1, Math.round((Date.now() - gameStartTime) / 60000)));
       gameStartTime = 0;
@@ -1182,7 +1381,6 @@
       const badgeColor = hasLink ? "#0070f1" : "var(--success)";
       const clickAction = hasLink ? `window.open('${game.url}', '_blank')` : `window.simulateDownload('${game.title}')`;
 
-      // Demo oyunları ve Undertale hariç tüm oyunlara Torrent etiketi ekle
       const showTorrent = !game.isDemo && game.title !== "Undertale";
 
       const iconHtml = game.icon.startsWith('http') 
@@ -1229,9 +1427,8 @@
   document.querySelectorAll('.modal-overlay').forEach(modal => {
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
-        if (modal.id === 'gameModal' || modal.id === 'aiModal') {
-            if(modal.id === 'gameModal') window.closeGameModal();
-            else closeModal('aiModal');
+        if (modal.id === 'gameModal') {
+          window.closeGameModal();
         } else {
           modal.classList.remove('active');
           if (modal.id === 'previewModal' && currentPreviewUrl) { URL.revokeObjectURL(currentPreviewUrl); currentPreviewUrl = null; }
