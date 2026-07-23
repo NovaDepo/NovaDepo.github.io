@@ -332,10 +332,10 @@
     box-shadow: 0 25px 60px rgba(0,0,0,0.8); animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
-  /* Kompakt AI Modal Stili (Sayfanın çeyreğinden küçük) */
+  /* Büyütülmüş AI Modal Stili */
   .ai-modal-box {
     background: #0f0c29; border: 1px solid var(--card-border);
-    border-radius: 16px; width: 90%; max-width: 380px; height: 300px;
+    border-radius: 16px; width: 85vw; max-width: 900px; height: 75vh;
     display: flex; flex-direction: column; overflow: hidden;
     box-shadow: 0 25px 60px rgba(0,0,0,0.8); animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -363,6 +363,9 @@
 <body>
 
 <canvas id="galaxy-canvas"></canvas>
+
+<!-- Sağ Üst Köşe Sabit AI Butonu -->
+<button class="action-btn" style="position: fixed; top: 80px; right: 24px; z-index: 50; width: 56px; height: 56px; border-radius: 50%; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 26px; box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4);" onclick="window.openAIModal(event)" title="AI Asistan">🤖</button>
 
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner"></div>
@@ -524,15 +527,15 @@
   </div>
 </div>
 
-<!-- Kompakt AI Modal -->
+<!-- Büyütülmüş AI Modal -->
 <div class="modal-overlay" id="aiModal">
   <div class="ai-modal-box">
-    <div class="game-modal-header" style="padding: 10px 16px;">
-      <div class="game-modal-title" style="font-size: 14px;">
+    <div class="game-modal-header" style="padding: 12px 20px;">
+      <div class="game-modal-title" style="font-size: 16px;">
         <span>🤖</span>
         <span>G3 AI Asistan</span>
       </div>
-      <button class="header-btn" style="width: 28px; height: 28px; font-size: 12px;" onclick="closeModal('aiModal')" title="Kapat">✕</button>
+      <button class="header-btn" style="width: 32px; height: 32px; font-size: 14px;" onclick="closeModal('aiModal')" title="Kapat">✕</button>
     </div>
     <div class="game-frame-container">
       <iframe src="https://g3ai.vercel.app" style="width: 100%; height: 100%; border: none; background: #000;"></iframe>
@@ -916,9 +919,8 @@
     { id: 5, title: "Slow Roads", genre: "Simülasyon", rating: "4.6", players: "30K", icon: "🚗", color: "linear-gradient(135deg, #06b6d4, #0891b2)", type: "external", url: "https://slowroads.io" },
     { id: 6, title: "Eğim Antrenmanı", genre: "FPS", rating: "4.8", players: "15K", icon: "🎯", color: "linear-gradient(135deg, #8b5cf6, #6d28d9)", type: "internal", gameId: "aim" },
     { id: 7, title: "Super Mario Bros", genre: "Platform", rating: "4.9", players: "500K", icon: "🍄", color: "linear-gradient(135deg, #ef4444, #dc2626)", type: "external", url: "https://jcw87.github.io/c2-smb1/" },
-    { id: 8, title: "GizliOyuncu3", genre: "Web", rating: "4.8", players: "10K", icon: "🕵️", color: "linear-gradient(135deg, #6366f1, #4f46e5)", type: "special", url: "https://gizlioyuncu3.github.io" },
-    { id: 9, title: "Five Nights at Freddy's", genre: "Korku", rating: "4.9", players: "150K", icon: "🐻", color: "linear-gradient(135deg, #1e293b, #0f172a)", type: "external", url: "https://dorukyum.github.io/FNAF-Web/" },
-    { id: 10, title: "Krunker.io", genre: "FPS", rating: "4.7", players: "1M", icon: "🎯", color: "linear-gradient(135deg, #f97316, #ea580c)", type: "external", url: "https://krunker.io" }
+    { id: 8, title: "Five Nights at Freddy's", genre: "Korku", rating: "4.9", players: "150K", icon: "🐻", color: "linear-gradient(135deg, #1e293b, #0f172a)", type: "external", url: "https://dorukyum.github.io/FNAF-Web/" },
+    { id: 9, title: "Krunker.io", genre: "FPS", rating: "4.7", players: "1M", icon: "🎯", color: "linear-gradient(135deg, #f97316, #ea580c)", type: "external", url: "https://krunker.io" }
   ];
 
   let currentSortGame = 'all';
@@ -942,19 +944,6 @@
 
     filteredGames.forEach(game => {
       const isFav = favorites.includes(game.id);
-      let actionButtons = `
-        <button class="action-btn" style="flex: 1; padding: 8px; font-size: 13px; background: var(--primary); border-color: var(--primary);" onclick="window.launchGame(${game.id}, event)">▶ Oyna</button>
-        <button class="action-btn" style="flex: 0 0 40px; padding: 8px; font-size: 14px;" onclick="window.toggleFav(${game.id}, event)">${isFav ? '⭐' : '☆'}</button>
-      `;
-      
-      if (game.type === 'special') {
-        actionButtons = `
-          <button class="action-btn" style="flex: 1; padding: 8px; font-size: 13px; background: var(--primary); border-color: var(--primary);" onclick="window.launchGame(${game.id}, event)">▶ Oyna</button>
-          <button class="action-btn" style="flex: 0 0 40px; padding: 8px; font-size: 14px; background: var(--accent); border-color: var(--accent);" onclick="window.openAIModal(event)" title="AI Asistan">🤖</button>
-          <button class="action-btn" style="flex: 0 0 40px; padding: 8px; font-size: 14px;" onclick="window.toggleFav(${game.id}, event)">${isFav ? '⭐' : '☆'}</button>
-        `;
-      }
-
       const card = document.createElement('div');
       card.className = 'game-card';
       card.innerHTML = `
@@ -969,7 +958,8 @@
             <span>👥 ${game.players}</span>
           </div>
           <div style="margin-top: 12px; display: flex; gap: 8px;">
-            ${actionButtons}
+            <button class="action-btn" style="flex: 1; padding: 8px; font-size: 13px; background: var(--primary); border-color: var(--primary);" onclick="window.launchGame(${game.id}, event)">▶ Oyna</button>
+            <button class="action-btn" style="flex: 0 0 40px; padding: 8px; font-size: 14px;" onclick="window.toggleFav(${game.id}, event)">${isFav ? '⭐' : '☆'}</button>
           </div>
         </div>
       `;
@@ -1156,20 +1146,20 @@
   document.getElementById('btnAction').addEventListener('click', () => { currentSortGame = 'action'; currentFilterGame = ''; document.getElementById('searchInput').value = ''; renderGames(); showToast('⚔️ Sadece Aksiyon/FPS oyunları gösteriliyor.'); });
 
   const downloadGamesDB = [
-    { id: 101, title: "Cyber Odyssey", size: "45 GB", icon: "🤖", color: "linear-gradient(135deg, #06b6d4, #3b82f6)" },
-    { id: 102, title: "Forest Survivor", size: "12 GB", icon: "🌲", color: "linear-gradient(135deg, #22c55e, #15803d)" },
-    { id: 103, title: "Space Miner Pro", size: "8.5 GB", icon: "⛏️", color: "linear-gradient(135deg, #f59e0b, #d97706)" },
-    { id: 104, title: "Racing Legends", size: "60 GB", icon: "🏎️", color: "linear-gradient(135deg, #ef4444, #b91c1c)" },
-    { id: 105, title: "Mystic RPG", size: "25 GB", icon: "🧙‍♂️", color: "linear-gradient(135deg, #8b5cf6, #6d28d9)" },
-    { id: 106, title: "Zombie Outbreak", size: "32 GB", icon: "🧟", color: "linear-gradient(135deg, #374151, #111827)" },
+    { id: 101, title: "Cyber Odyssey", size: "45 GB", icon: "🤖", color: "linear-gradient(135deg, #06b6d4, #3b82f6)", isDemo: true },
+    { id: 102, title: "Forest Survivor", size: "12 GB", icon: "🌲", color: "linear-gradient(135deg, #22c55e, #15803d)", isDemo: true },
+    { id: 103, title: "Space Miner Pro", size: "8.5 GB", icon: "⛏️", color: "linear-gradient(135deg, #f59e0b, #d97706)", isDemo: true },
+    { id: 104, title: "Racing Legends", size: "60 GB", icon: "🏎️", color: "linear-gradient(135deg, #ef4444, #b91c1c)", isDemo: true },
+    { id: 105, title: "Mystic RPG", size: "25 GB", icon: "🧙‍♂️", color: "linear-gradient(135deg, #8b5cf6, #6d28d9)", isDemo: true },
+    { id: 106, title: "Zombie Outbreak", size: "32 GB", icon: "🧟", color: "linear-gradient(135deg, #374151, #111827)", isDemo: true },
     { id: 107, title: "Undertale", size: "200 MB", icon: "https://image.api.playstation.com/cdn/EP3746/CUSA09415_00/iOZJVz9HyD3V5UBwKA0HJg14znS8jRXa.png", color: "linear-gradient(135deg, #111827, #fbbf24)", url: "https://mega.nz/file/giEGlb7D#WiZDAWCtLhxrX2UKk7Lobxc5hQVwjfOphPIWnhqfJO4" },
-    { id: 108, title: "GTAV", size: "60 GB", icon: "🚗", color: "linear-gradient(135deg, #ef4444, #b91c1c)", url: "https://mega.nz/file/ouNSVSZK#JeYC12gvqjFGL51P7gZGjmqNxABP0XxYuLnVfpZ_h3E", isTorrent: true },
+    { id: 108, title: "GTAV", size: "60 GB", icon: "🚗", color: "linear-gradient(135deg, #ef4444, #b91c1c)", url: "https://mega.nz/file/ouNSVSZK#JeYC12gvqjFGL51P7gZGjmqNxABP0XxYuLnVfpZ_h3E" },
     { id: 109, title: "BEAMNG.DRIVE", size: "25 GB", icon: "🚙", color: "linear-gradient(135deg, #f97316, #ea580c)", url: "https://mega.nz/file/cmNkzaBR#QJhRLV58Fu5kF4BKfvzV6CU8qNa1VbqzvSdzkcjxuQo" },
     { id: 110, title: "Drone Simulator", size: "15 GB", icon: "🚁", color: "linear-gradient(135deg, #3b82f6, #1d4ed8)", url: "https://mega.nz/file/Mncn0QTa#TvbrZMH3wOnesh4-jWNfYFG272Xx6WPrG5b6ESMLDww" },
     { id: 111, title: "Forza Horizon 6", size: "80 GB", icon: "🏎️", color: "linear-gradient(135deg, #f97316, #ea580c)", url: "https://mega.nz/file/U38B0KJB#xoULFvKam927gVIwmToUFj6kwXgQlw_TUKJ-MLvwivM" },
-    { id: 112, title: "Poppy Playtime 5", size: "40 GB", icon: "🧸", color: "linear-gradient(135deg, #8b5cf6, #6d28d9)", url: "https://mega.nz/file/di10ybpS#lIXcIeIxtIsmEWLosKPHZtiQSzBJvgXHh7JNZLqDWKA", isTorrent: true },
-    { id: 113, title: "PEAK", size: "35 GB", icon: "🏔️", color: "linear-gradient(135deg, #10b981, #047857)", url: "https://mega.nz/file/lrsy0ZpB#yUWS1zdnzMjWV8i7bjcadEZOm1A8f4_Odffv8Uu83ao", isTorrent: true },
-    { id: 114, title: "Human Fall Flat", size: "5 GB", icon: "🧍", color: "linear-gradient(135deg, #f59e0b, #d97706)", url: "https://mega.nz/file/Rz0U0DpR#XE9-zt2uItfFNwLURMgudqytQFlvz4u-pbSrVKNCMcI", isTorrent: true }
+    { id: 112, title: "Poppy Playtime 5", size: "40 GB", icon: "🧸", color: "linear-gradient(135deg, #8b5cf6, #6d28d9)", url: "https://mega.nz/file/di10ybpS#lIXcIeIxtIsmEWLosKPHZtiQSzBJvgXHh7JNZLqDWKA" },
+    { id: 113, title: "PEAK", size: "35 GB", icon: "🏔️", color: "linear-gradient(135deg, #10b981, #047857)", url: "https://mega.nz/file/lrsy0ZpB#yUWS1zdnzMjWV8i7bjcadEZOm1A8f4_Odffv8Uu83ao" },
+    { id: 114, title: "Human Fall Flat", size: "5 GB", icon: "🧍", color: "linear-gradient(135deg, #f59e0b, #d97706)", url: "https://mega.nz/file/Rz0U0DpR#XE9-zt2uItfFNwLURMgudqytQFlvz4u-pbSrVKNCMcI" }
   ];
 
   function renderDownloads() {
@@ -1192,6 +1182,9 @@
       const badgeColor = hasLink ? "#0070f1" : "var(--success)";
       const clickAction = hasLink ? `window.open('${game.url}', '_blank')` : `window.simulateDownload('${game.title}')`;
 
+      // Demo oyunları ve Undertale hariç tüm oyunlara Torrent etiketi ekle
+      const showTorrent = !game.isDemo && game.title !== "Undertale";
+
       const iconHtml = game.icon.startsWith('http') 
         ? `<img src="${game.icon}" alt="${game.title}" style="width: 70px; height: 70px; object-fit: contain; z-index: 1; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.5)); border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.2);" />`
         : `<span style="z-index: 1; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.5)); font-size: 50px; background: rgba(255,255,255,0.05); border-radius: 16px; padding: 12px; border: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; width: 74px; height: 74px; margin: 0 auto;">${game.icon}</span>`;
@@ -1202,7 +1195,7 @@
         </div>
         <div class="game-info">
           <div class="game-title">${game.title}</div>
-          ${game.isTorrent ? '<div style="font-size: 11px; color: #f59e0b; margin-bottom: 6px; font-weight: 600; letter-spacing: 0.5px;">⚡ TORRENT DOSYASI</div>' : ''}
+          ${showTorrent ? '<div style="font-size: 11px; color: #f59e0b; margin-bottom: 6px; font-weight: 600; letter-spacing: 0.5px;">⚡ TORRENT DOSYASI</div>' : ''}
           <div class="game-meta">
             <span>💾 ${game.size}</span>
             <span style="color: ${badgeColor};">✓ ${badgeText}</span>
