@@ -542,13 +542,10 @@
   <div id="tab-mods" class="tab-content">
     <div class="welcome">
       <h1>🛠️ <span class="highlight">Mods</span></h1>
-      <p>Modlar yakında eklenecek. (Demo Modu)</p>
+      <p>Oyunlarınız için en iyi modları buradan keşfedin.</p>
     </div>
-    <div class="empty-state" style="margin-top: 40px;">
-      <div class="icon">🚧</div>
-      <p>Mod bölümü şu anda geliştirme aşamasındadır.</p>
-      <button class="btn" onclick="showToast('🚧 Demo modu: Yakında aktif olacak!')">Bilgi Al</button>
-    </div>
+    <h2 class="section-title">🎮 Popüler Modlar</h2>
+    <div class="game-grid" id="modsGrid"></div>
   </div>
 </main>
 
@@ -688,7 +685,8 @@
       document.querySelector('.nav-tab[onclick="switchTab(\'mods\')"]').classList.add('active');
       document.getElementById('tab-mods').classList.add('active');
       document.getElementById('searchInput').placeholder = "Mod ara...";
-      document.getElementById('welcomeText').textContent = "Modlar yakında eklenecek. (Demo Modu)";
+      document.getElementById('welcomeText').textContent = "Oyunlarınız için en iyi modları buradan keşfedin.";
+      renderMods();
     }
     document.getElementById('searchInput').value = '';
     currentFilterDepo = ''; currentFilterGame = ''; currentFilterDownload = '';
@@ -1217,6 +1215,8 @@
     let animationId;
     let cameraAngle = 0;
     let cameraPitch = 0.5;
+    let targetCameraAngle = 0;
+    let targetCameraPitch = 0.5;
     const keys = { w: false, a: false, s: false, d: false };
     
     const organisms = [
@@ -1269,11 +1269,34 @@
       const gridHelper = new THREE.GridHelper(500, 100, 0x8b5cf6, 0x1a1a3a);
       scene.add(gridHelper);
 
+      // Gelişmiş Organizma Görünümü
+      const playerGroup = new THREE.Group();
+      const bodyGeo = new THREE.IcosahedronGeometry(1, 1);
+      const bodyMat = new THREE.MeshStandardMaterial({ 
+        color: 0x06b6d4, 
+        emissive: 0x06b6d4, 
+        emissiveIntensity: 0.3,
+        flatShading: true,
+        transparent: true,
+        opacity: 0.9
+      });
+      const body = new THREE.Mesh(bodyGeo, bodyMat);
+      
+      const nucleusGeo = new THREE.SphereGeometry(0.4, 8, 8);
+      const nucleusMat = new THREE.MeshStandardMaterial({ color: 0xec4899, emissive: 0xec4899, emissiveIntensity: 0.5 });
+      const nucleus = new THREE.Mesh(nucleusGeo, nucleusMat);
+      
+      playerGroup.add(body);
+      playerGroup.add(nucleus);
+      
       player = {
-        mesh: new THREE.Mesh(new THREE.SphereGeometry(1, 16, 16), new THREE.MeshStandardMaterial({ color: 0x06b6d4, emissive: 0x06b6d4, emissiveIntensity: 0.2 })),
+        mesh: playerGroup,
+        body: body,
+        nucleus: nucleus,
         size: 1,
         velocity: new THREE.Vector3(),
-        speed: 0.2
+        speed: 0.2,
+        pulsePhase: 0
       };
       player.mesh.castShadow = true;
       player.mesh.position.y = player.size;
@@ -1286,7 +1309,7 @@
         const info = getOrganismInfo(size);
         
         const geo = size > 5 ? new THREE.IcosahedronGeometry(size, 1) : new THREE.SphereGeometry(size, 8, 8);
-        const mat = new THREE.MeshStandardMaterial({ color: info.color, emissive: info.color, emissiveIntensity: 0.1 });
+        const mat = new THREE.MeshStandardMaterial({ color: info.color, emissive: info.color, emissiveIntensity: 0.1, flatShading: true });
         const mesh = new THREE.Mesh(geo, mat);
         
         mesh.position.set((Math.random() - 0.5) * 400, size, (Math.random() - 0.5) * 400);
@@ -1312,8 +1335,8 @@
       const rect = container.getBoundingClientRect();
       const x = (e.clientX - rect.left) / rect.width - 0.5;
       const y = (e.clientY - rect.top) / rect.height - 0.5;
-      cameraAngle -= x * 0.05;
-      cameraPitch = Math.max(0.1, Math.min(1.2, cameraPitch + y * 0.05));
+      targetCameraAngle -= x * 0.15;
+      targetCameraPitch = Math.max(0.1, Math.min(1.2, targetCameraPitch + y * 0.15));
     };
 
     const onKeyDown = (e) => {
@@ -1352,18 +1375,29 @@
       player.mesh.position.add(player.velocity);
       player.mesh.position.x = Math.max(-240, Math.min(240, player.mesh.position.x));
       player.mesh.position.z = Math.max(-240, Math.min(240, player.mesh.position.z));
-      player.mesh.position.y = player.size;
 
+      // Organik Pulsasyon (Nefes alma) Efekti
+      player.pulsePhase += 0.08;
+      const pulse = 1 + Math.sin(player.pulsePhase) * 0.08;
       const info = getOrganismInfo(player.size);
-      player.mesh.material.color.copy(info.color);
-      player.mesh.material.emissive.copy(info.color);
-      player.mesh.scale.setScalar(info.scale);
+      const finalScale = info.scale * pulse;
+      
+      player.body.scale.setScalar(finalScale);
+      player.nucleus.scale.setScalar(finalScale * 0.4);
+      player.body.material.color.copy(info.color);
+      player.body.material.emissive.copy(info.color);
+      
+      player.mesh.position.y = finalScale; // Yerde kalmasını sağlar
       
       document.getElementById('nova3dio-name').textContent = info.name;
       document.getElementById('nova3dio-size').textContent = info.scale.toFixed(1);
     };
 
     const updateCamera = () => {
+      // Stabil Kamera Hareketi (Damping/Yumuşatma)
+      cameraAngle += (targetCameraAngle - cameraAngle) * 0.1;
+      cameraPitch += (targetCameraPitch - cameraPitch) * 0.1;
+
       const dist = 10 + player.size * 2;
       const height = 5 + player.size * 1.5;
       
@@ -1548,6 +1582,35 @@
           </div>
           <button class="action-btn" style="width: 100%; margin-top: 12px; padding: 10px; font-size: 13px; color: white; ${btnStyle}" onclick="${clickAction}">
             ${btnText}
+          </button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  const modsDB = [
+    { title: "BEAMNG.DRIVE Modları", description: "En yeni, en popüler ve en kaliteli BeamNG.drive araç ve harita modları.", icon: "🚗", color: "linear-gradient(135deg, #ef4444, #b91c1c)", url: "https://www.modland.net/beamng.drive" },
+    { title: "GTA V Modları", description: "Araç, grafik ve oyun mekanikleri için en iyi GTA 5 modları.", icon: "🌆", color: "linear-gradient(135deg, #10b981, #047857)", url: "https://www.modland.net/gta-5" },
+    { title: "Minecraft Modları", description: "Survival, teknoloji ve büyü temalı en iyi Minecraft modları.", icon: "⛏️", color: "linear-gradient(135deg, #f59e0b, #d97706)", url: "https://www.modland.net/minecraft" }
+  ];
+
+  function renderMods() {
+    const grid = document.getElementById('modsGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    modsDB.forEach(mod => {
+      const card = document.createElement('div');
+      card.className = 'game-card';
+      card.innerHTML = `
+        <div class="game-cover" style="background: ${mod.color};">
+          <span style="z-index: 1; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.5)); font-size: 55px; background: rgba(255,255,255,0.05); border-radius: 16px; padding: 12px; border: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; width: 74px; height: 74px; margin: 0 auto;">${mod.icon}</span>
+        </div>
+        <div class="game-info">
+          <div class="game-title">${mod.title}</div>
+          <div style="font-size: 12px; color: var(--muted); margin-bottom: 12px; line-height: 1.4; min-height: 34px;">${mod.description}</div>
+          <button class="action-btn" style="width: 100%; padding: 10px; font-size: 13px; background: var(--primary); border-color: var(--primary);" onclick="window.open('${mod.url}', '_blank')">
+            🔗 Modları Keşfet
           </button>
         </div>
       `;
